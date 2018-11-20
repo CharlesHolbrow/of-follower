@@ -31,7 +31,8 @@ public:
     ofVec2f pos;
     float size;
     void update(float deltaTime) {
-        size *= 1 - (.99 * deltaTime);
+        size -= 30.f * deltaTime;
+        size = (size < 0) ? 0 : size;
     };
     ofColor ofc = ofColor::white;
     ofColor color() {

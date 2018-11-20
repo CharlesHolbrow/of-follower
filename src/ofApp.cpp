@@ -26,16 +26,14 @@ void ofApp::update(){
 
     ofVec2f a = dv / dt; // average acceleration = (change in V) / (change in T)
 
-    ofSetColor(255, 0, 0);
     float step = 0.001;
-    float alpha = 0.5;
 
+    ofSetColor(255, 255, 255);
     for (float time = 0; time < dt; time += step) {
         ofVec2f input = mi + vf * time;
         filter.push(input);
         ofVec2f pos = filter.average();
         t1.add(pos.x, pos.y, 30, dt - time); // not exact, but close enough
-        ofSetColor(255, 255, 255);
     }
 
     bool down = ofGetMousePressed(); // Is the mouse currently down?
