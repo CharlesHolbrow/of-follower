@@ -4,6 +4,28 @@
 #include "ofMain.h"
 #include "gesture.h"
 
+class Filter {
+private:
+    static const int SIZE = 20;
+    ofVec2f values[SIZE];
+    int position = 0;
+public:
+    void push(ofVec2f v) {
+        values[position] = v;
+        if (++position >= SIZE) {
+            position = position % SIZE;
+        }
+    };
+    ofVec2f average(){
+        ofVec2f result;
+        for (int i = 0; i < SIZE; i++) {
+            result += values[i];
+        }
+        return result / SIZE;
+    }
+};
+
+
 class Particle {
 public:
     ofVec2f pos;
@@ -161,7 +183,9 @@ class ofApp : public ofBaseApp{
 
     Trail t1;
     Gesture gesture;
+    Filter filter;
 
+    ofVec2f state;
     ofVec2f previousAcceleration;
     ofVec2f previousVelocity;
     ofPolyline l1;
