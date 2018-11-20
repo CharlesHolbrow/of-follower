@@ -9,11 +9,13 @@ public:
     ofVec2f pos;
     float size;
     void update(float deltaTime) {
-        size *= 1 - (0.9 * deltaTime);
+        size *= 1 - (.99 * deltaTime);
     };
-    float color() {
-        return ofMap(size, 0, 28, 12, 255, true);
-    } const;
+    ofColor ofc = ofColor::white;
+    ofColor color() {
+        float scale = ofMap(size, 0, 28, 0.1, 1, true);
+        return scale * ofc;
+    };
 };
 
 class Trail {
@@ -52,7 +54,7 @@ public:
         }
     };
 
-    // Append adds new particles. The new particles extend in a line from the
+    // Adds new particles. The new particles extend in a line from the
     // previous particles. Particles will be equally spaced. If the
     void append(float x, float y, float size) {
         Particle p;
@@ -81,6 +83,17 @@ public:
         }
         lastPos = pos;
     };
+
+    // Add a single particle, and update with deltaTime
+    void add(float x, float y, float size, float deltaTime) {
+        Particle p;
+        p.size = size;
+        p.pos.x = x;
+        p.pos.y = y;
+        p.update(deltaTime);
+        p.ofc = ofGetStyle().color;
+        parts.push_back(p);
+    }
 
     void curveTo(float x, float y, float size) {
 
@@ -143,12 +156,18 @@ class ofApp : public ofBaseApp{
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
     
-    float previousTime = 0;
-    float mouseX;
-    float mouseY;
+    uint64_t previousMicroseconds = 0;
+    uint64_t previousMouseMoveMicroseconds = 0;
+
     Trail t1;
     Gesture gesture;
+
+    ofVec2f previousAcceleration;
+    ofVec2f previousVelocity;
     ofPolyline l1;
     ofPath p1;
+
     bool mouseDown;
+    int previousX;
+    int previousY;
 };
