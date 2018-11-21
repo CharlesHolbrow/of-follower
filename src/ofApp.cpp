@@ -10,21 +10,18 @@ void ofApp::update(){
     uint64_t microseconds = ofGetElapsedTimeMicros();
     uint64_t deltaMicroseconds = microseconds - previousMicroseconds;
 
-    // time differnece in seconds
+    // time in seconds
+    float t = static_cast<float>(microseconds * 0.000001);
+    // delta time in seconds
     float dt = static_cast<float>(deltaMicroseconds * 0.000001);
-    
+
     int x = ofGetMouseX();
     int y = ofGetMouseY();
 
-    ofVec2f mi = ofVec2f(previousX, previousY);
-    ofVec2f mf = ofVec2f(x, y);
-    ofVec2f dm = mf - mi;
-
-    ofVec2f vi = previousVelocity;
-    ofVec2f vf = dm / dt;
-    ofVec2f dv = vf - vi;
-
-    ofVec2f a = dv / dt; // average acceleration = (change in V) / (change in T)
+    ofVec2f mi = previousMousePos; // initial mouse position
+    ofVec2f mf = ofVec2f(x, y);    // final mouse position
+    ofVec2f dm = mf - mi;          // mouse delta
+    ofVec2f vf = dm / dt;          // velocity final
 
     float step = 0.001;
 
@@ -37,17 +34,10 @@ void ofApp::update(){
     }
 
     bool down = ofGetMousePressed(); // Is the mouse currently down?
-    if (mouseDown) {
-//        t1.append(mouseX, mouseY, 30);
-    } else {
-        t1.update(dt);
-    }
+    if (!down) t1.update(dt);
 
-    previousVelocity = vf; // Should we comment this out and do it in the for loop?
-    previousAcceleration = a;
-    previousX = x;
-    previousY = y;
     previousMicroseconds = microseconds;
+    previousMousePos = mf;
 }
 
 //--------------------------------------------------------------
@@ -80,14 +70,10 @@ void ofApp::mouseDragged(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mousePressed(int x, int y, int button){
-    if (button != 0) return;
-    mouseDown = true;
 }
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    if (button != 0) return;
-    mouseDown = false;
     t1.clear();
 }
 

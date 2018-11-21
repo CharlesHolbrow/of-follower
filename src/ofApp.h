@@ -180,19 +180,12 @@ class ofApp : public ofBaseApp{
 		void gotMessage(ofMessage msg);
     
     uint64_t previousMicroseconds = 0;
-    uint64_t previousMouseMoveMicroseconds = 0;
 
     Trail t1;
-    Gesture gesture;
     Filter filter;
 
-    ofVec2f state;
-    ofVec2f previousAcceleration;
-    ofVec2f previousVelocity;
     ofPolyline l1;
     ofPath p1;
 
-    bool mouseDown;
-    int previousX;
-    int previousY;
+    ofVec2f previousMousePos;
 };
