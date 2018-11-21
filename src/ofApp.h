@@ -2,10 +2,11 @@
 
 #include <list>
 #include "ofMain.h"
+#include "ticker.h"
 
 class Filter {
 private:
-    static const int SIZE = 20;
+    static const int SIZE = 30;
     ofVec2f values[SIZE];
     int position = 0;
 public:
@@ -52,27 +53,17 @@ private:
     // last appended. lastPos stores the last position that was appended to
     // the list of particles.
     ofVec2f lastPos;
-
-    // The most recently appended value should always be draw, even if it is
-    // not far enough from the last point that was succesfully added. This
-    // this ensures that the most recently added value does not appear
-    // jittery when the trail extends slowly.
-    Particle tip;
-
 public:
     std::list <Particle> parts;
     void clear() {
         parts.clear();
     };
+
+    // Update each particle
     void update(float deltaTime) {
-        // draw the tip first, then iterate toward the back. This means we
-        // start at the "back" of the list, and work toward the front (new
-        // particles are pushed to the back).
-        tip.update(deltaTime);
         for (auto p = parts.begin(); p != parts.end(); p++) {
             p->update(deltaTime);
         }
-        
         // remove small particles from the
         while (parts.size() > 0 && parts.front().size < 1) {
             parts.pop_front();
@@ -92,10 +83,7 @@ public:
 
     // Draw the trail
     void render() {
-        ofSetColor(tip.color());
-        ofDrawCircle(tip.pos.x, tip.pos.y, tip.size);
-        
-        for (auto p = parts.rbegin(); p != parts.rend(); p++) {
+        for (auto p = parts.begin(); p != parts.end(); p++) {
             ofSetColor(p->color());
             ofDrawCircle(p->pos.x, p->pos.y, p->size);
         }
@@ -125,6 +113,7 @@ class ofApp : public ofBaseApp{
     
     uint64_t previousMicroseconds = 0;
 
+    Stepper stepper;
     Trail t1;
     Filter filter;
     ofPolyline l1;

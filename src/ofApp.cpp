@@ -3,6 +3,8 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetFrameRate(60);
+    stepper.setStepSize(1. / 1000.);
+    ofLog() << "Tickst per frame @ 60fps: " << 1. / 60. / stepper.getStepSize();
 }
 
 //--------------------------------------------------------------
@@ -10,10 +12,18 @@ void ofApp::update(){
     uint64_t microseconds = ofGetElapsedTimeMicros();
     uint64_t deltaMicroseconds = microseconds - previousMicroseconds;
 
+    // What time did the frame start?
+    double frameStart = static_cast<double>(previousMicroseconds * 0.000001);
     // time in seconds
-    float t = static_cast<float>(microseconds * 0.000001);
+    double frameEnd = static_cast<double>(microseconds * 0.000001);
     // delta time in seconds
-    float dt = static_cast<float>(deltaMicroseconds * 0.000001);
+    double frameDelta = static_cast<double>(deltaMicroseconds * 0.000001);
+
+    // how much time are we going to tick for in this frame
+    double timeLeft = stepper.timeLeft(frameEnd);
+
+    bool down = ofGetMousePressed(); // Is the mouse currently down?
+    if (!down) t1.update(timeLeft);
 
     int x = ofGetMouseX();
     int y = ofGetMouseY();
@@ -21,20 +31,20 @@ void ofApp::update(){
     ofVec2f mi = previousMousePos; // initial mouse position
     ofVec2f mf = ofVec2f(x, y);    // final mouse position
     ofVec2f dm = mf - mi;          // mouse delta
-    ofVec2f vf = dm / dt;          // velocity final
+    ofVec2f vf = dm / frameDelta;  // velocity final. NOTE: use fame delta, not step delta
 
-    float step = 0.001;
+    ofSetColor(127. + 127. * sin(frameEnd), 255, 255);
 
-    ofSetColor(255, 255, 255);
-    for (float time = 0; time < dt; time += step) {
-        ofVec2f input = mi + vf * time;
+    double startTime = stepper.time();
+    while (stepper.stepToward(frameEnd)) {
+        float timeLeft = stepper.timeLeft(frameEnd);
+        float timeSince = stepper.timeSince(startTime);
+
+        ofVec2f input = mi + vf * timeSince;
         filter.push(input);
         ofVec2f pos = filter.average();
-        t1.add(pos.x, pos.y, 30, dt - time); // not exact, but close enough
+        t1.add(pos.x, pos.y, 30, timeLeft); // not exact, but close enough
     }
-
-    bool down = ofGetMousePressed(); // Is the mouse currently down?
-    if (!down) t1.update(dt);
 
     previousMicroseconds = microseconds;
     previousMousePos = mf;
@@ -43,8 +53,6 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0,0,0);
-    
-    ofSetColor(12, 127, 127);
     t1.render();
     ofSetColor(200, 10, 10);
     l1.draw();
@@ -74,7 +82,6 @@ void ofApp::mousePressed(int x, int y, int button){
 
 //--------------------------------------------------------------
 void ofApp::mouseReleased(int x, int y, int button){
-    t1.clear();
 }
 
 //--------------------------------------------------------------
