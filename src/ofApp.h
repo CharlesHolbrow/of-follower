@@ -2,7 +2,7 @@
 
 #include <list>
 #include "ofMain.h"
-#include "ticker.h"
+#include "stepper.h"
 
 class Filter {
 private:
