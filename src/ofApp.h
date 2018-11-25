@@ -3,33 +3,7 @@
 #include <list>
 #include "ofMain.h"
 #include "stepper.h"
-
-class Filter {
-private:
-    static const int SIZE = 30;
-    ofVec2f values[SIZE];
-    int position = 0;
-public:
-    void push(ofVec2f v) {
-        values[position] = v;
-        if (++position >= SIZE) {
-            position = position % SIZE;
-        }
-    };
-    void fill(ofVec2f v) {
-        for (int i = 0; i < SIZE; i++) {
-            values[i] = v;
-        }
-    }
-    ofVec2f average(){
-        ofVec2f result;
-        for (int i = 0; i < SIZE; i++) {
-            result += values[i];
-        }
-        return result / SIZE;
-    }
-};
-
+#include "gesture.h"
 
 class Particle {
 public:
@@ -47,12 +21,6 @@ public:
 };
 
 class Trail {
-private:
-    // We want to make sure that our particles are drawn equally spaced. For
-    // that reason, the list of particles ends before the particle that was
-    // last appended. lastPos stores the last position that was appended to
-    // the list of particles.
-    ofVec2f lastPos;
 public:
     std::list <Particle> parts;
     void clear() {
@@ -117,6 +85,7 @@ class ofApp : public ofBaseApp{
     Trail t1;
     Filter filter;
     ofPolyline l1;
+    Gesture gesture;
 
     ofVec2f previousMousePos;
 };

@@ -4,6 +4,7 @@
 void ofApp::setup(){
     ofSetFrameRate(60);
     stepper.setStepSize(1. / 1000.);
+    gesture.stepper.setStepSize(1. / 1000.);
     ofLog() << "Tickst per frame @ 60fps: " << 1. / 60. / stepper.getStepSize();
 }
 
@@ -46,6 +47,8 @@ void ofApp::update(){
         t1.add(pos.x, pos.y, 30, timeLeft); // not exact, but close enough
     }
 
+    gesture.update(frameDelta, mf);
+
     previousMicroseconds = microseconds;
     previousMousePos = mf;
 }
@@ -56,6 +59,11 @@ void ofApp::draw(){
     t1.render();
     ofSetColor(200, 10, 10);
     l1.draw();
+
+    ofSetColor(128, 0, 0);
+    for (auto blip = gesture.blips.begin(); blip != gesture.blips.end(); blip++) {
+        ofDrawCircle(blip->pos.x, blip->pos.y, 4);
+    }
 }
 
 //--------------------------------------------------------------
