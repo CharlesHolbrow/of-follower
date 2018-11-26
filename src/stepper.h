@@ -31,6 +31,9 @@ public:
     // Simple
     double timeSince(double t) { return lastStepTime - t; };
 
+    // Restart the lastStepTime, but do not change the stepSize
+    void restart() { lastStepTime = 0; };
+
     // returns true if step occured
     bool stepToward(double t) {
         if (t > lastStepTime) {

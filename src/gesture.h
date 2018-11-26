@@ -12,11 +12,13 @@
 #define gesture_h
 
 #include <list>
+
 #include "ofMain.h"
 #include "stepper.h"
 #include "filter.h"
 
-// Blip is a point on the radar
+// A Blip on the radar. Timing and position of a point in the gesture.
+// These will be added
 struct Blip {
     ofVec2f pos;
     double time;
@@ -24,8 +26,8 @@ struct Blip {
 
 
 class Gesture {
+private:
 public:
-    double time;
     ofVec2f previousPos;
     double previousTime;
 
@@ -33,16 +35,23 @@ public:
     Stepper stepper;
     std::list <Blip> blips;
 
-    void clear() {
-        time = 0;
-        previousPos = ofVec2f(0, 0);
+    // Starts a new gesture. (does not change stepper size)
+    void start( ofVec2f pos) {
+        previousPos = pos;
         previousTime = 0;
-        stepper = *(new Stepper);
+        filter.fill(pos);
+        blips.clear();
+        stepper.restart();
     };
 
+    void setStepSize(double stepSize) {
+        stepper.setStepSize(stepSize);
+    };
+
+
     void update(double frameDelta, ofVec2f pos) {
-        double frameStart = time;
-        double frameEnd = time + frameDelta;
+        double frameStart = previousTime;
+        double frameEnd = previousTime + frameDelta;
         // how much time are we going to tick for in this frame
         double timeLeft = stepper.timeLeft(frameEnd);
 
@@ -52,7 +61,7 @@ public:
         ofVec2f mi = previousPos;     // initial mouse position
         ofVec2f mf = pos;             // final mouse position
         ofVec2f dm = mf - mi;         // mouse delta
-        ofVec2f vf = dm / frameDelta; // velocity final. NOTE: use fame delta, not step delta
+        ofVec2f vf = dm / frameDelta; // velocity final. NOTE: uses fame delta, not step delta
 
         ofSetColor(127. + 127. * sin(frameEnd), 255, 255);
 
@@ -72,7 +81,6 @@ public:
             //t1.add(pos.x, pos.y, 30, timeLeft); // this is how it was done before abstracting Gesture
         }
 
-        time = frameEnd;
         previousTime = frameEnd;
         previousPos = mf;
     };

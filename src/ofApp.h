@@ -81,6 +81,8 @@ class ofApp : public ofBaseApp{
     
     uint64_t previousMicroseconds = 0;
 
+    bool previousMouseIsDown;
+
     Stepper stepper;
     Trail t1;
     Filter filter;

@@ -24,7 +24,6 @@ void ofApp::update(){
     double timeLeft = stepper.timeLeft(frameEnd);
 
     bool down = ofGetMousePressed(); // Is the mouse currently down?
-    if (!down) t1.update(timeLeft);
 
     int x = ofGetMouseX();
     int y = ofGetMouseY();
@@ -33,6 +32,9 @@ void ofApp::update(){
     ofVec2f mf = ofVec2f(x, y);    // final mouse position
     ofVec2f dm = mf - mi;          // mouse delta
     ofVec2f vf = dm / frameDelta;  // velocity final. NOTE: use fame delta, not step delta
+
+    // update all existing particles
+    t1.update(timeLeft);
 
     ofSetColor(127. + 127. * sin(frameEnd), 255, 255);
 
@@ -44,13 +46,26 @@ void ofApp::update(){
         ofVec2f input = mi + vf * timeSince;
         filter.push(input);
         ofVec2f pos = filter.average();
-        t1.add(pos.x, pos.y, 30, timeLeft); // not exact, but close enough
+        t1.add(pos.x, pos.y, 30, timeLeft);
     }
 
-    gesture.update(frameDelta, mf);
+    // deal with the gesture
+    if (down != previousMouseIsDown) {
+        if (down) {
+            // mouse pressed
+            gesture.start(mf);
+        } else {
+            // mouse released
+        }
+    }
+
+    if (down) {
+        gesture.update(frameDelta, mf);
+    }
 
     previousMicroseconds = microseconds;
     previousMousePos = mf;
+    previousMouseIsDown = down;
 }
 
 //--------------------------------------------------------------
