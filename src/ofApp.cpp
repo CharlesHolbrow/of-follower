@@ -20,48 +20,33 @@ void ofApp::update(){
     // delta time in seconds
     double frameDelta = static_cast<double>(deltaMicroseconds * 0.000001);
 
-    // how much time are we going to tick for in this frame
-    double timeLeft = stepper.timeLeft(frameEnd);
-
+    // Get mouse information;
     bool down = ofGetMousePressed(); // Is the mouse currently down?
-
     int x = ofGetMouseX();
     int y = ofGetMouseY();
 
+    // What did the mouse do during the last frame?
     ofVec2f mi = previousMousePos; // initial mouse position
     ofVec2f mf = ofVec2f(x, y);    // final mouse position
     ofVec2f dm = mf - mi;          // mouse delta
     ofVec2f vf = dm / frameDelta;  // velocity final. NOTE: use fame delta, not step delta
 
     // update all existing particles
-    t1.update(timeLeft);
-
-    ofSetColor(127. + 127. * sin(frameEnd), 255, 255);
-
-    double startTime = stepper.time();
-    while (stepper.stepToward(frameEnd)) {
-        float timeLeft = stepper.timeLeft(frameEnd);
-        float timeSince = stepper.timeSince(startTime);
-
-        ofVec2f input = mi + vf * timeSince;
-        filter.push(input);
-        ofVec2f pos = filter.average();
-        t1.add(pos.x, pos.y, 30, timeLeft);
-    }
+    t1.update(frameDelta);
 
     // deal with the gesture
-    if (down != previousMouseIsDown) {
-        if (down) {
-            // mouse pressed
-            gesture.start(mf);
-        } else {
-            // mouse released
-        }
+    if (down && down != previousMouseIsDown) {
+        gesture.start(mf);
     }
-
     if (down) {
         gesture.update(frameDelta, mf);
     }
+    for (auto b = gesture.blips.begin(); b != gesture.blips.end(); b++) {
+        // How long has the blip been alive for?
+        double lifeTime = gesture.stepper.time() - b->time;
+        t1.add(b->pos.x, b->pos.y, 30, lifeTime);
+    }
+    gesture.blips.clear();
 
     previousMicroseconds = microseconds;
     previousMousePos = mf;

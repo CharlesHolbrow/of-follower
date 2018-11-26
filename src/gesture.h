@@ -5,8 +5,13 @@
 //  Created by Charles Holbrow on 11/10/18.
 //
 // Gesture is a touch input recorder. It keeps a sequential, timestamped
-// list of touch events. The positionAtTime method returns the position
-// of the input gesture, interpolating between two points if needed.
+// list of touch events.
+//
+// There are types of time that we are interested in.
+// - Frames (frame rate). We cannot control this precisely, but we can request
+//   with ofSetFrameRate(fps).
+// - Steps a smaller increment that we controll precisely. Every frame, we step
+//   multiple times. The step size is specified exactly.
 
 #ifndef gesture_h
 #define gesture_h
@@ -27,10 +32,10 @@ struct Blip {
 
 class Gesture {
 private:
+    double updateStepsDuration; // duration of all steps in the most recent update
+    ofVec2f previousPos;        // Mouse position at the end of last frame
+    double previousTime;        // When did the last frame end?
 public:
-    ofVec2f previousPos;
-    double previousTime;
-
     Filter filter;
     Stepper stepper;
     std::list <Blip> blips;
@@ -39,6 +44,7 @@ public:
     void start( ofVec2f pos) {
         previousPos = pos;
         previousTime = 0;
+        updateStepsDuration = 0;
         filter.fill(pos);
         blips.clear();
         stepper.restart();
@@ -48,12 +54,15 @@ public:
         stepper.setStepSize(stepSize);
     };
 
+    // How long did the most recent update cover? Should be a multiple of step size.
+    double getUpdateDuration() {
+        return updateStepsDuration;
+    }
 
     void update(double frameDelta, ofVec2f pos) {
-        double frameStart = previousTime;
         double frameEnd = previousTime + frameDelta;
         // how much time are we going to tick for in this frame
-        double timeLeft = stepper.timeLeft(frameEnd);
+        updateStepsDuration = stepper.timeLeft(frameEnd);
 
         int x = ofGetMouseX();
         int y = ofGetMouseY();
@@ -78,7 +87,6 @@ public:
             b.time = stepper.time();
 
             blips.push_back(b);
-            //t1.add(pos.x, pos.y, 30, timeLeft); // this is how it was done before abstracting Gesture
         }
 
         previousTime = frameEnd;
