@@ -38,7 +38,7 @@ void ofApp::update(){
     if (down && down != previousMouseIsDown) {
         gesture.start(mf);
     }
-    if (down) {
+    else if (down) {
         gesture.update(frameDelta, mf);
     }
     while (gesture.canPop()) {
