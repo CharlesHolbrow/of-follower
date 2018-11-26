@@ -8,6 +8,12 @@
 #ifndef stepper_h
 #define stepper_h
 
+
+// There are two types of time represented in a Stepper.
+// - Frames (frame rate). We cannot control this precisely, but we can request
+//   with ofSetFrameRate(fps). Frame time is passed to the advanceFrame function.
+// - Steps are a smaller increment that we controll precisely. Every frame, we
+//   step multiple times. The step size is specified exactly.
 class Stepper {
 public:
     double frameStart;
