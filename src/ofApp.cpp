@@ -41,12 +41,10 @@ void ofApp::update(){
     if (down) {
         gesture.update(frameDelta, mf);
     }
-    for (auto b = gesture.blips.begin(); b != gesture.blips.end(); b++) {
-        // How long has the blip been alive for?
-        double lifeTime = gesture.stepper.time() - b->time;
-        t1.add(b->pos.x, b->pos.y, 30, lifeTime);
+    while (gesture.canPop()) {
+        Blip b = gesture.pop();
+        t1.add(b.pos.x, b.pos.y, 30, b.age);
     }
-    gesture.blips.clear();
 
     previousMicroseconds = microseconds;
     previousMousePos = mf;
@@ -55,15 +53,10 @@ void ofApp::update(){
 
 //--------------------------------------------------------------
 void ofApp::draw(){
-    ofBackground(0,0,0);
+    ofBackground(0, 0, 0);
     t1.render();
     ofSetColor(200, 10, 10);
     l1.draw();
-
-    ofSetColor(128, 0, 0);
-    for (auto blip = gesture.blips.begin(); blip != gesture.blips.end(); blip++) {
-        ofDrawCircle(blip->pos.x, blip->pos.y, 4);
-    }
 }
 
 //--------------------------------------------------------------

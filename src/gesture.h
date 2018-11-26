@@ -6,12 +6,6 @@
 //
 // Gesture is a touch input recorder. It keeps a sequential, timestamped
 // list of touch events.
-//
-// There are types of time that we are interested in.
-// - Frames (frame rate). We cannot control this precisely, but we can request
-//   with ofSetFrameRate(fps).
-// - Steps a smaller increment that we controll precisely. Every frame, we step
-//   multiple times. The step size is specified exactly.
 
 #ifndef gesture_h
 #define gesture_h
@@ -26,19 +20,27 @@
 // These will be added
 struct Blip {
     ofVec2f pos;
-    double time;
+    // Age and birth are both mulitples of the step size.
+    double birth; // How long after the gesture started was the blip born.
+    double age;   // At the time that the Blip was poped, how old is it?
 };
 
 
+// There are two types of time represented in a Gesture.
+// - Frames (frame rate). We cannot control this precisely, but we can request
+//   with ofSetFrameRate(fps). Frame time is passed to the update function.
+// - Steps a smaller increment that we controll precisely. Every frame, we step
+//   multiple times. The step size is specified exactly.
 class Gesture {
 private:
     double updateStepsDuration; // duration of all steps in the most recent update
     ofVec2f previousPos;        // Mouse position at the end of last frame
     double previousTime;        // When did the last frame end?
-public:
-    Filter filter;
-    Stepper stepper;
     std::list <Blip> blips;
+    Filter filter;
+
+public:
+    Stepper stepper;
 
     // Starts a new gesture. (does not change stepper size)
     void start( ofVec2f pos) {
@@ -84,7 +86,7 @@ public:
 
             Blip b;
             b.pos = filter.average();
-            b.time = stepper.time();
+            b.birth = stepper.time();
 
             blips.push_back(b);
         }
@@ -92,6 +94,20 @@ public:
         previousTime = frameEnd;
         previousPos = mf;
     };
+
+    bool canPop() {
+        return !blips.empty();
+    };
+
+    Blip pop() {
+        Blip b;
+        if (!canPop()) return b;
+
+        b = blips.front();
+        b.age = stepper.time() - b.birth;
+        blips.pop_front();
+        return b;
+    }
 };
 
 
