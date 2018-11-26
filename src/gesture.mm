@@ -7,4 +7,3 @@
 
 #include "ofMain.h"
 #include "gesture.h"
-
