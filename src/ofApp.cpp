@@ -1,10 +1,10 @@
 #include "ofApp.h"
+#include "stepper.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetFrameRate(60);
     stepper.setStepSize(1. / 1000.);
-    gesture.stepper.setStepSize(1. / 1000.);
     ofLog() << "Tickst per frame @ 60fps: " << 1. / 60. / stepper.getStepSize();
 }
 
@@ -20,34 +20,33 @@ void ofApp::update(){
     // delta time in seconds
     double frameDelta = static_cast<double>(deltaMicroseconds * 0.000001);
 
+    // Stepper
+    stepper.advanceFrame(frameDelta);
+
     // Get mouse information;
     bool down = ofGetMousePressed(); // Is the mouse currently down?
-    int x = ofGetMouseX();
-    int y = ofGetMouseY();
-
-    // What did the mouse do during the last frame?
-    ofVec2f mi = previousMousePos; // initial mouse position
-    ofVec2f mf = ofVec2f(x, y);    // final mouse position
-    ofVec2f dm = mf - mi;          // mouse delta
-    ofVec2f vf = dm / frameDelta;  // velocity final. NOTE: use fame delta, not step delta
+    ofVec2f pos = ofVec2f(ofGetMouseX(), ofGetMouseY()); // mouse position
 
     // update all existing particles
-    t1.update(frameDelta);
+    t1.update(stepper.stepsDuration());
 
     // deal with the gesture
     if (down && down != previousMouseIsDown) {
-        gesture.start(mf);
+        gesture.start(pos);
     }
-    else if (down) {
-        gesture.update(frameDelta, mf);
+    if (down) {
+        gesture.update(stepper, pos);
     }
+
     while (gesture.canPop()) {
         Blip b = gesture.pop();
-        t1.add(b.pos.x, b.pos.y, 30, b.age);
+        double t = stepper.stepZeroTime + b.updateTime;
+        ofSetColor(127. + 127. * sin(t), 255, 255);
+        t1.add(b.pos.x, b.pos.y, 30, b.updateTime);
     }
 
     previousMicroseconds = microseconds;
-    previousMousePos = mf;
+    previousMousePos = pos;
     previousMouseIsDown = down;
 }
 

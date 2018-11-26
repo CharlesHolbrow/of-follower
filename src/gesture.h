@@ -21,8 +21,8 @@
 struct Blip {
     ofVec2f pos;
     // Age and birth are both mulitples of the step size.
-    double birth; // How long after the gesture started was the blip born.
-    double age;   // At the time that the Blip was poped, how old is it?
+    double birthStepTime; // How long after the gesture started was the blip born?
+    double updateTime;    // At the last step in the frame, how old is the blip?
 };
 
 
@@ -35,25 +35,16 @@ class Gesture {
 private:
     double updateStepsDuration; // duration of all steps in the most recent update
     ofVec2f previousPos;        // Mouse position at the end of last frame
-    double previousTime;        // When did the last frame end?
     std::list <Blip> blips;
     Filter filter;
 
 public:
-    Stepper stepper;
-
     // Starts a new gesture. (does not change stepper size)
     void start( ofVec2f pos) {
         previousPos = pos;
-        previousTime = 0;
         updateStepsDuration = 0;
         filter.fill(pos);
         blips.clear();
-        stepper.restart();
-    };
-
-    void setStepSize(double stepSize) {
-        stepper.setStepSize(stepSize);
     };
 
     // How long did the most recent update cover? Should be a multiple of step size.
@@ -61,37 +52,37 @@ public:
         return updateStepsDuration;
     }
 
-    void update(double frameDelta, ofVec2f pos) {
-        double frameEnd = previousTime + frameDelta;
-        // how much time are we going to tick for in this frame
-        updateStepsDuration = stepper.timeLeft(frameEnd);
-
-        int x = ofGetMouseX();
-        int y = ofGetMouseY();
-
+    void update(Stepper stepper, ofVec2f pos) {
         ofVec2f mi = previousPos;     // initial mouse position
         ofVec2f mf = pos;             // final mouse position
         ofVec2f dm = mf - mi;         // mouse delta
-        ofVec2f vf = dm / frameDelta; // velocity final. NOTE: uses fame delta, not step delta
 
-        ofSetColor(127. + 127. * sin(frameEnd), 255, 255);
+        // velocity final. NOTE: uses fame delta, not step delta
+        ofVec2f vf = dm / stepper.frameDuration();
 
-        double startTime = stepper.time();
-        while (stepper.stepToward(frameEnd)) {
-            float timeLeft = stepper.timeLeft(frameEnd);
-            float timeSince = stepper.timeSince(startTime);
+        // Note that the step at "stepZeroTime" has already been processed.
+        // For that reason, we start on stepIndex 1, and loop while <=
+        int stepIndex = 1; // start
+        while (stepIndex <= stepper.steps) {
+            // time since stepZero
+            double timeSince = stepIndex * stepper.stepSize;
+            // Time since the beginning of the gesture
+            double t = stepper.stepZeroTime + timeSince;
+            // time until the last step in the frame
+            double age = stepper.lastStepTime() - t;
 
             ofVec2f input = mi + vf * timeSince;
             filter.push(input);
 
             Blip b;
             b.pos = filter.average();
-            b.birth = stepper.time();
+            b.updateTime = age;
+            b.birthStepTime = t;
 
             blips.push_back(b);
+            stepIndex++;
         }
 
-        previousTime = frameEnd;
         previousPos = mf;
     };
 
@@ -104,7 +95,6 @@ public:
         if (!canPop()) return b;
 
         b = blips.front();
-        b.age = stepper.time() - b.birth;
         blips.pop_front();
         return b;
     }

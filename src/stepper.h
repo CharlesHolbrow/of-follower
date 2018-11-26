@@ -5,16 +5,16 @@
 //  Created by Charles Holbrow on 11/11/18.
 //
 
-#ifndef ticker_h
-#define ticker_h
+#ifndef stepper_h
+#define stepper_h
 
 class Stepper {
-private:
-    double lastStepTime;
-    double stepSize = 1;
 public:
-    // How many steps until time t?
-    int stepsUntil(double t) { return floor((t - lastStepTime) / stepSize); };
+    double frameStart;
+    double frameEnd;
+    double stepZeroTime; // time of last step of previous frame
+    int steps;
+    double stepSize = 0.1;
 
     // Set our step duration. Noop if <= 0.
     void setStepSize(double t) { if (t > 0) stepSize = t; };
@@ -22,29 +22,35 @@ public:
     // How long are our steps?
     double getStepSize() { return stepSize; };
 
-    // When did the last step occur?
-    double time() { return lastStepTime; };
+    // How long was the last frame?
+    double frameDuration() { return frameEnd - frameStart; };
 
-    // Duration of all steps up until t.
-    double timeLeft(double t) { return stepsUntil(t) * stepSize; };
+    // How long were all the steps in the last frame;
+    double stepsDuration() { return steps * stepSize; };
 
-    // Simple
-    double timeSince(double t) { return lastStepTime - t; };
+    // What time is the
+    double lastStepTime() { return stepZeroTime + steps * stepSize; };
 
     // Restart the lastStepTime, but do not change the stepSize
-    void restart() { lastStepTime = 0; };
+    void restart() {
+        frameStart = 0;
+        frameEnd = 0;
+        stepZeroTime = 0;
+        steps = 0;
+    };
 
-    // returns true if step occured
-    bool stepToward(double t) {
-        if (t > lastStepTime) {
-            double target = lastStepTime + stepSize;
-            if (target < t) {
-                lastStepTime += stepSize;
-                return true;
-            }
-        }
-        return false;
+    void advanceFrame(double frameDelta) {
+        // update the stepZeroTime to the last step in the previous frame.
+        // note that this should be done before other mutations.
+        stepZeroTime += stepsDuration();
+
+        // update the frame times
+        frameStart = frameEnd;
+        frameEnd = frameStart + frameDelta;
+
+        // how many steps to take in this frame?
+        steps = floor((frameEnd - stepZeroTime) / stepSize);
     };
 };
 
-#endif /* ticker_h */
+#endif /* stepper_h */
