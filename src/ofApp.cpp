@@ -4,7 +4,7 @@
 //--------------------------------------------------------------
 void ofApp::setup(){
     ofSetFrameRate(60);
-    stepper.setStepSize(1. / 1000.);
+    stepper.setStepSize(1. / 2000.);
     ofLog() << "Tickst per frame @ 60fps: " << 1. / 60. / stepper.getStepSize();
     t1.speed =  0.5;
 }

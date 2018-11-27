@@ -30,7 +30,7 @@ private:
     double updateStepsDuration; // duration of all steps in the most recent update
     ofVec2f previousPos;        // Mouse position at the end of last frame
     std::list <Blip> blips;
-    Filter <30> filter;
+    Filter <60> filter;
 
 public:
     // Starts a new gesture. (does not change stepper size)
