@@ -6,7 +6,6 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     stepper.setStepSize(1. / 2000.);
     ofLog() << "Tickst per frame @ 60fps: " << 1. / 60. / stepper.getStepSize();
-    t1.speed =  0.5;
 }
 
 //--------------------------------------------------------------
@@ -29,22 +28,30 @@ void ofApp::update(){
     ofVec2f pos = ofVec2f(ofGetMouseX(), ofGetMouseY()); // mouse position
 
     // update all existing particles
-    t1.update(stepper.stepsDuration());
+    for (auto t = trails.begin(); t != trails.end(); t++) {
+        t->update(stepper.stepsDuration());
+    }
 
-    // deal with the
+    // deal with the gesture
     if (down && down != previousMouseIsDown) {
+        // start a new gesture
         gesture.start(pos);
+        // add a trail
+        Trail t;
+        t.speed = 0.5 + 0.25 * sin(frameStart * 0.5);
+        trails.push_back(t);
+        ofLog() << "add trail";
     }
 
     if (down) {
         gesture.update(stepper, pos);
     }
 
-    while (gesture.canPop()) {
+    while (gesture.canPop() && !trails.empty()) {
         Blip b = gesture.pop();
         ofSetColor(127. + 127. * sin(b.gestureTime), 255, 255);
-        t1.add(b.pos.x, b.pos.y, 30);
-        t1.updateLast(b.updateTime);
+        trails.back().add(b.pos.x, b.pos.y, 30);
+        trails.back().updateLast(b.updateTime);
     }
 
     previousMicroseconds = microseconds;
@@ -55,7 +62,13 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0, 0, 0);
-    t1.render();
+    for (auto t = trails.begin(); t != trails.end(); t++) {
+        t->render();
+    }
+    while (!trails.empty() && trails.front().isDead()) {
+        trails.pop_front();
+        ofLog() << "removing trail";
+    }
 }
 
 //--------------------------------------------------------------

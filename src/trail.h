@@ -79,6 +79,10 @@ public:
             p->render();
         }
     };
+    
+    bool isDead() {
+        return parts.empty();
+    }
 };
 
 

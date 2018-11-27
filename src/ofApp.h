@@ -24,14 +24,13 @@ class ofApp : public ofBaseApp{
 		void windowResized(int w, int h);
 		void dragEvent(ofDragInfo dragInfo);
 		void gotMessage(ofMessage msg);
-    
-    uint64_t previousMicroseconds = 0;
 
+    // Caching the previous frame make it easy to get the delta
+    uint64_t previousMicroseconds = 0;
     bool previousMouseIsDown;
+    ofVec2f previousMousePos;
 
     Stepper stepper;
-    Trail t1;
     Gesture gesture;
-
-    ofVec2f previousMousePos;
+    std::list <Trail> trails;
 };
