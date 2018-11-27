@@ -4,8 +4,7 @@
             "name": "Mac",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/../../../libs/**",
-                "${workspaceFolder}/../../../libs/openFrameworks"
+                "${workspaceFolder}/../../../libs/**"
             ],
             "defines": [],
             "macFrameworkPath": [
