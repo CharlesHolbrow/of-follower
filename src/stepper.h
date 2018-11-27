@@ -49,8 +49,8 @@ public:
     };
 
     void advanceFrame(double frameDelta) {
-        // update the stepZeroTime to the last step in the previous frame.
-        // note that this should be done before other mutations.
+        // update the stepZeroTime to the last step in the previous frame. Note
+        // that this should be done before the other mutations in this function.
         stepZeroTime += stepsDuration();
 
         // update the frame times

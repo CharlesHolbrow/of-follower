@@ -30,10 +30,11 @@ private:
     ofVec2f previousPos;        // Mouse position at the end of last frame
     std::list <Blip> blips;
     Filter <60> filter;
+    double playbackTime; // When poping gestures, what time do we start playing from?
 
 public:
-    // Starts a new gesture. (does not change stepper size)
-    void start( ofVec2f pos) {
+    // Start recording a new gesture. (does not change stepper size)
+    void record(ofVec2f pos) {
         previousPos = pos;
         filter.fill(pos);
         blips.clear();
@@ -78,8 +79,9 @@ public:
         return blips.size();
     };
 
+    // check if there are any blips to get that happen before 'until'
     bool canPop() {
-        return !blips.empty();
+        return (!blips.empty());
     };
 
     Blip pop() {
@@ -90,6 +92,27 @@ public:
         blips.pop_front();
         return b;
     };
+
+    // Advance the playback head by the stepper.frameDuration.
+    std::list <Blip> play(Stepper stepper) {
+        std:list <Blip> result;
+        double innerFrameEnd = playbackTime + stepper.frameDuration();
+        // the difference in time between the stepper and the gesture;
+        // How far ahead is global transport from inner?
+        double diff = stepper.frameEnd - innerFrameEnd;
+        double innerStepZero = stepper.stepZeroTime - diff;
+        double innerLastStep = stepper.lastStepTime() - diff;
+
+        while (!blips.empty() && blips.front().gestureTime <= innerFrameEnd) {
+            Blip b = blips.front();
+            b.sinceTime = b.gestureTime - innerStepZero;
+            b.updateTime = innerLastStep - b.gestureTime;
+            result.push_back(b);
+            blips.pop_front();
+        }
+        playbackTime = innerFrameEnd;
+        return result;
+    }
 };
 
 

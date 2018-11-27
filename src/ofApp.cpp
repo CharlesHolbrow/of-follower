@@ -35,7 +35,7 @@ void ofApp::update(){
     // deal with the gesture
     if (down && down != previousMouseIsDown) {
         // start a new gesture
-        gesture.start(pos);
+        gesture.record(pos);
         // add a trail
         Trail t;
         t.speed = 0.5 + 0.25 * sin(frameStart * 0.5);
@@ -47,12 +47,19 @@ void ofApp::update(){
         gesture.update(stepper, pos);
     }
 
-    while (gesture.canPop() && !trails.empty()) {
-        Blip b = gesture.pop();
-        ofSetColor(127. + 127. * sin(b.gestureTime), 255, 255);
-        trails.back().add(b.pos.x, b.pos.y, 30);
-        trails.back().updateLast(b.updateTime);
+    std::list<Blip> playBlips = gesture.play(stepper);
+    for (auto b = playBlips.begin(); b != playBlips.end(); b++) {
+        ofSetColor(127. + 127. * sin(b->gestureTime), 255, 255);
+        trails.back().add(b->pos.x, b->pos.y, 30);
+        trails.back().updateLast(b->updateTime);
     }
+
+    // while (gesture.canPop() && !trails.empty()) { // TODO: check
+    //     Blip b = gesture.pop();
+    //     ofSetColor(127. + 127. * sin(b.gestureTime), 255, 255);
+    //     trails.back().add(b.pos.x, b.pos.y, 30);
+    //     trails.back().updateLast(b.updateTime);
+    // }
 
     previousMicroseconds = microseconds;
     previousMousePos = pos;
