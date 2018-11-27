@@ -34,11 +34,8 @@ public:
     // How long were all the steps in the last frame;
     double stepsDuration() { return steps * stepSize; };
 
-    // What time is the
+    // What time is the last step in the frame?
     double lastStepTime() { return stepZeroTime + (steps * stepSize); };
-
-    //
-    double stepTimeAt(int step) { return stepSize * step; };
 
     // Restart the lastStepTime, but do not change the stepSize
     void restart() {
