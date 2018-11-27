@@ -27,7 +27,6 @@ struct Blip {
 
 class Gesture {
 private:
-    double updateStepsDuration; // duration of all steps in the most recent update
     ofVec2f previousPos;        // Mouse position at the end of last frame
     std::list <Blip> blips;
     Filter <60> filter;
@@ -36,16 +35,11 @@ public:
     // Starts a new gesture. (does not change stepper size)
     void start( ofVec2f pos) {
         previousPos = pos;
-        updateStepsDuration = 0;
         filter.fill(pos);
         blips.clear();
     };
 
-    // How long did the most recent update cover? Should be a multiple of step size.
-    double getUpdateDuration() {
-        return updateStepsDuration;
-    };
-
+    // construct the gesture by adding a new blips
     void update(Stepper stepper, ofVec2f pos) {
         ofVec2f mi = previousPos;     // initial mouse position
         ofVec2f mf = pos;             // final mouse position
