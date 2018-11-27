@@ -32,5 +32,7 @@ class ofApp : public ofBaseApp{
 
     Stepper stepper;
     Gesture gesture;
+		Gesture extraG;
+		Trail extraT;
     std::list <Trail> trails;
 };

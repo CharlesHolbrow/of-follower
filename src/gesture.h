@@ -27,10 +27,10 @@ struct Blip {
 
 class Gesture {
 private:
-    ofVec2f previousPos;        // Mouse position at the end of last frame
+    ofVec2f previousPos;    // Mouse position at the end of last frame
+    double playbackTime;    // When playing back, where should our frame begin?
     std::list <Blip> blips;
     Filter <60> filter;
-    double playbackTime; // When poping gestures, what time do we start playing from?
 
 public:
     // Start recording a new gesture. (does not change stepper size)
@@ -46,7 +46,7 @@ public:
         ofVec2f mf = pos;             // final mouse position
         ofVec2f dm = mf - mi;         // mouse delta
 
-        // velocity final. The unfiltered gesture looks prettier with stepsDuration
+        // Velocity final. The unfiltered gesture looks prettier with stepsDuration
         // than with frameDuration
         ofVec2f vf = dm / stepper.stepsDuration();
 
@@ -79,21 +79,8 @@ public:
         return blips.size();
     };
 
-    // check if there are any blips to get that happen before 'until'
-    bool canPop() {
-        return (!blips.empty());
-    };
-
-    Blip pop() {
-        Blip b;
-        if (!canPop()) return b;
-
-        b = blips.front();
-        blips.pop_front();
-        return b;
-    };
-
-    // Advance the playback head by the stepper.frameDuration.
+    // Get all the blips for a frame. This advances a the gestures playhead by
+    // the frameDuration. The absolute position of the stepper is ignored.
     std::list <Blip> play(Stepper stepper) {
         std:list <Blip> result;
         double innerFrameEnd = playbackTime + stepper.frameDuration();

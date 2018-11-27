@@ -31,11 +31,13 @@ void ofApp::update(){
     for (auto t = trails.begin(); t != trails.end(); t++) {
         t->update(stepper.stepsDuration());
     }
+    extraT.update(stepper.stepsDuration());
 
     // deal with the gesture
     if (down && down != previousMouseIsDown) {
         // start a new gesture
         gesture.record(pos);
+        extraG.record(pos);
         // add a trail
         Trail t;
         t.speed = 0.5 + 0.25 * sin(frameStart * 0.5);
@@ -45,6 +47,7 @@ void ofApp::update(){
 
     if (down) {
         gesture.update(stepper, pos);
+        extraG.update(stepper, pos);
     }
 
     std::list<Blip> playBlips = gesture.play(stepper);
@@ -54,12 +57,17 @@ void ofApp::update(){
         trails.back().updateLast(b->updateTime);
     }
 
-    // while (gesture.canPop() && !trails.empty()) { // TODO: check
-    //     Blip b = gesture.pop();
-    //     ofSetColor(127. + 127. * sin(b.gestureTime), 255, 255);
-    //     trails.back().add(b.pos.x, b.pos.y, 30);
-    //     trails.back().updateLast(b.updateTime);
-    // }
+    // Hacky code for testing gesture playback;
+    if (ofGetElapsedTimef() > 10) {
+        playBlips = extraG.play(stepper);
+        ofLog() << "playing... " << playBlips.size();
+
+        for (auto b = playBlips.begin(); b != playBlips.end(); b++) {
+            ofSetColor(255, 127. + 127. * sin(b->gestureTime), 255);
+            extraT.add(b->pos.x, b->pos.y, 30);
+            extraT.updateLast(b->updateTime);
+        }
+    }
 
     previousMicroseconds = microseconds;
     previousMousePos = pos;
@@ -72,6 +80,7 @@ void ofApp::draw(){
     for (auto t = trails.begin(); t != trails.end(); t++) {
         t->render();
     }
+    extraT.render();
     while (!trails.empty() && trails.front().isDead()) {
         trails.pop_front();
         ofLog() << "removing trail";
