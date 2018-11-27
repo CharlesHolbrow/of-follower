@@ -6,6 +6,7 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     stepper.setStepSize(1. / 1000.);
     ofLog() << "Tickst per frame @ 60fps: " << 1. / 60. / stepper.getStepSize();
+    t1.speed =  0.5;
 }
 
 //--------------------------------------------------------------
@@ -20,7 +21,7 @@ void ofApp::update(){
     // delta time in seconds
     double frameDelta = static_cast<double>(deltaMicroseconds * 0.000001);
 
-    // Stepper
+    // Setup the Stepper for this frame
     stepper.advanceFrame(frameDelta);
 
     // Get mouse information;
@@ -28,21 +29,27 @@ void ofApp::update(){
     ofVec2f pos = ofVec2f(ofGetMouseX(), ofGetMouseY()); // mouse position
 
     // update all existing particles
-    t1.update(stepper.stepsDuration());
+    if (down) t1.update(stepper.stepsDuration());
 
-    // deal with the gesture
+    // deal with the
     if (down && down != previousMouseIsDown) {
         gesture.start(pos);
     }
+
     if (down) {
         gesture.update(stepper, pos);
     }
 
+    if (gesture.size() > 0) {
+        ofLog() << "blips: " << gesture.size() << " steps: " << stepper.stepsDuration();
+    }
+
     while (gesture.canPop()) {
         Blip b = gesture.pop();
-        double t = stepper.stepZeroTime + b.updateTime;
-        ofSetColor(127. + 127. * sin(t), 255, 255);
-        t1.add(b.pos.x, b.pos.y, 30, b.updateTime);
+        double t = stepper.stepZeroTime + b.sinceTime;
+        ofSetColor(127. + 127. * sin(10 * (stepper.stepZeroTime + b.sinceTime)), 255, 255);
+        t1.add(b.pos.x, b.pos.y, 30);
+        t1.updateLast(b.updateTime);
     }
 
     previousMicroseconds = microseconds;
@@ -54,8 +61,6 @@ void ofApp::update(){
 void ofApp::draw(){
     ofBackground(0, 0, 0);
     t1.render();
-    ofSetColor(200, 10, 10);
-    l1.draw();
 }
 
 //--------------------------------------------------------------

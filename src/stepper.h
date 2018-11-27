@@ -35,7 +35,10 @@ public:
     double stepsDuration() { return steps * stepSize; };
 
     // What time is the
-    double lastStepTime() { return stepZeroTime + steps * stepSize; };
+    double lastStepTime() { return stepZeroTime + (steps * stepSize); };
+
+    //
+    double stepTimeAt(int step) { return stepSize * step; };
 
     // Restart the lastStepTime, but do not change the stepSize
     void restart() {

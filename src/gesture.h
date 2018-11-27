@@ -20,8 +20,8 @@
 struct Blip {
     ofVec2f pos;
     // Age and birth are both mulitples of the step size.
-    double birthStepTime; // How long after the gesture started was the blip born?
-    double updateTime;    // At the last step in the frame, how old is the blip?
+    double sinceTime;  // how long after step0 was this created?
+    double updateTime; // At the last step in the frame, how old is the blip?
 };
 
 class Gesture {
@@ -29,7 +29,7 @@ private:
     double updateStepsDuration; // duration of all steps in the most recent update
     ofVec2f previousPos;        // Mouse position at the end of last frame
     std::list <Blip> blips;
-    Filter filter;
+    Filter <30> filter;
 
 public:
     // Starts a new gesture. (does not change stepper size)
@@ -54,23 +54,22 @@ public:
         ofVec2f vf = dm / stepper.frameDuration();
 
         // Note that the step at "stepZeroTime" has already been processed.
-        // For that reason, we start on stepIndex 1, and loop while <=
+        // For that reason, we start on stepIndex 1, and loop while "<="
         int stepIndex = 1; // start
         while (stepIndex <= stepper.steps) {
             // time since stepZero
-            double timeSince = stepIndex * stepper.stepSize;
-            // Time since the beginning of the gesture
-            double t = stepper.stepZeroTime + timeSince;
-            // time until the last step in the frame
-            double age = stepper.lastStepTime() - t;
+            double sinceTime = stepIndex * stepper.stepSize;
+            // time to next step zero
+            double updateTime = stepper.stepsDuration() - sinceTime;
 
-            ofVec2f input = mi + vf * timeSince;
+            ofVec2f input = mi + vf * sinceTime;
             filter.push(input);
 
             Blip b;
             b.pos = filter.average();
-            b.updateTime = age;
-            b.birthStepTime = t;
+            b.pos = input; // TODO: this is for debugging
+            b.updateTime = updateTime;
+            b.sinceTime = sinceTime;
 
             blips.push_back(b);
             stepIndex++;
@@ -78,6 +77,10 @@ public:
 
         previousPos = mf;
     };
+
+    int size() {
+        return blips.size();
+    }
 
     bool canPop() {
         return !blips.empty();

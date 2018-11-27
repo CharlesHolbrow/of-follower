@@ -31,8 +31,6 @@ class ofApp : public ofBaseApp{
 
     Stepper stepper;
     Trail t1;
-    Filter filter;
-    ofPolyline l1;
     Gesture gesture;
 
     ofVec2f previousMousePos;

@@ -7,10 +7,9 @@
 
 #ifndef filter_h
 #define filter_h
-
+template < int SIZE >
 class Filter {
 private:
-    static const int SIZE = 30;
     ofVec2f values[SIZE];
     int position = 0;
 public:
