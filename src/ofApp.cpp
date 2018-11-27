@@ -29,7 +29,7 @@ void ofApp::update(){
     ofVec2f pos = ofVec2f(ofGetMouseX(), ofGetMouseY()); // mouse position
 
     // update all existing particles
-    if (down) t1.update(stepper.stepsDuration());
+    t1.update(stepper.stepsDuration());
 
     // deal with the
     if (down && down != previousMouseIsDown) {
@@ -40,14 +40,9 @@ void ofApp::update(){
         gesture.update(stepper, pos);
     }
 
-    if (gesture.size() > 0) {
-        ofLog() << "blips: " << gesture.size() << " steps: " << stepper.stepsDuration();
-    }
-
     while (gesture.canPop()) {
         Blip b = gesture.pop();
-        double t = stepper.stepZeroTime + b.sinceTime;
-        ofSetColor(127. + 127. * sin(10 * (stepper.stepZeroTime + b.sinceTime)), 255, 255);
+        ofSetColor(127. + 127. * sin(b.gestureTime), 255, 255);
         t1.add(b.pos.x, b.pos.y, 30);
         t1.updateLast(b.updateTime);
     }

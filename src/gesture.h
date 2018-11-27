@@ -19,9 +19,10 @@
 // A Blip on the radar. Timing and position of a point in the gesture.
 struct Blip {
     ofVec2f pos;
-    // Age and birth are both mulitples of the step size.
-    double sinceTime;  // how long after step0 was this created?
-    double updateTime; // At the last step in the frame, how old is the blip?
+
+    double gestureTime; // How long into the gesture was this created?
+    double sinceTime;   // how long after step0 was this created?
+    double updateTime;  // At the last step in the frame, how old is the blip?
 };
 
 class Gesture {
@@ -43,15 +44,16 @@ public:
     // How long did the most recent update cover? Should be a multiple of step size.
     double getUpdateDuration() {
         return updateStepsDuration;
-    }
+    };
 
     void update(Stepper stepper, ofVec2f pos) {
         ofVec2f mi = previousPos;     // initial mouse position
         ofVec2f mf = pos;             // final mouse position
         ofVec2f dm = mf - mi;         // mouse delta
 
-        // velocity final. NOTE: uses fame delta, not step delta
-        ofVec2f vf = dm / stepper.frameDuration();
+        // velocity final. The unfiltered gesture looks prettier with stepsDuration
+        // than with frameDuration
+        ofVec2f vf = dm / stepper.stepsDuration();
 
         // Note that the step at "stepZeroTime" has already been processed.
         // For that reason, we start on stepIndex 1, and loop while "<="
@@ -67,9 +69,9 @@ public:
 
             Blip b;
             b.pos = filter.average();
-            b.pos = input; // TODO: this is for debugging
             b.updateTime = updateTime;
             b.sinceTime = sinceTime;
+            b.gestureTime = stepper.stepZeroTime + sinceTime;
 
             blips.push_back(b);
             stepIndex++;
@@ -80,7 +82,7 @@ public:
 
     int size() {
         return blips.size();
-    }
+    };
 
     bool canPop() {
         return !blips.empty();
@@ -93,7 +95,7 @@ public:
         b = blips.front();
         blips.pop_front();
         return b;
-    }
+    };
 };
 
 
