@@ -18,89 +18,46 @@
 
 // A Blip on the radar. Timing and position of a point in the gesture.
 struct Blip {
+    // The x,y position of this blip
     ofVec2f pos;
 
-    double gestureTime; // How long into the gesture was this created?
+    // How long into the gesture was this created?
+    double gestureTime;
+
+    // sinceTime and updateTime are only meaningful in the context of a frame.
+    // The provide timing information within a frame, and help the renderer
+    // know how much to update each blip.
     double sinceTime;   // how long after step0 was this created?
     double updateTime;  // At the last step in the frame, how old is the blip?
 };
 
+// These two methods make Blips json serializable
+using nlohmann::json;
+void to_json(json& j, const Blip& b);
+void from_json(const json& j, Blip& b);
+
 class Gesture {
 private:
-    ofVec2f previousPos;    // Mouse position at the end of last frame
-    double playbackTime;    // When playing back, where should our frame begin?
-    std::list <Blip> blips;
+    // Mouse position at the end of last frame
+    ofVec2f previousPos;
+    // Playhead position, so consecutive play() calls know where to pick up from
+    double playbackTime;
     Filter <60> filter;
+    std::list <Blip> blips;
 
 public:
     // Start recording a new gesture. (does not change stepper size)
-    void record(ofVec2f pos) {
-        previousPos = pos;
-        filter.fill(pos);
-        blips.clear();
-    };
+    void record(ofVec2f pos);
 
-    // construct the gesture by adding a new blips
-    void update(Stepper stepper, ofVec2f pos) {
-        ofVec2f mi = previousPos;     // initial mouse position
-        ofVec2f mf = pos;             // final mouse position
-        ofVec2f dm = mf - mi;         // mouse delta
+    // Construct the gesture by adding a new blips
+    void update(Stepper stepper, ofVec2f pos);
 
-        // Velocity final. The unfiltered gesture looks prettier with stepsDuration
-        // than with frameDuration
-        ofVec2f vf = dm / stepper.stepsDuration();
-
-        // Note that the step at "stepZeroTime" has already been processed.
-        // For that reason, we start on stepIndex 1, and loop while "<="
-        int stepIndex = 1; // start
-        while (stepIndex <= stepper.steps) {
-            // time since stepZero
-            double sinceTime = stepIndex * stepper.stepSize;
-            // time to next step zero
-            double updateTime = stepper.stepsDuration() - sinceTime;
-
-            ofVec2f input = mi + vf * sinceTime;
-            filter.push(input);
-
-            Blip b;
-            b.pos = filter.average();
-            b.updateTime = updateTime;
-            b.sinceTime = sinceTime;
-            b.gestureTime = stepper.stepZeroTime + sinceTime;
-
-            blips.push_back(b);
-            stepIndex++;
-        }
-
-        previousPos = mf;
-    };
-
-    int size() {
-        return blips.size();
-    };
+    // How many unplayed blips are in the gesture?
+    int size();
 
     // Get all the blips for a frame. This advances a the gestures playhead by
     // the frameDuration. The absolute position of the stepper is ignored.
-    std::list <Blip> play(Stepper stepper) {
-        std:list <Blip> result;
-        double innerFrameEnd = playbackTime + stepper.frameDuration();
-        // the difference in time between the stepper and the gesture;
-        // How far ahead is global transport from inner?
-        double diff = stepper.frameEnd - innerFrameEnd;
-        double innerStepZero = stepper.stepZeroTime - diff;
-        double innerLastStep = stepper.lastStepTime() - diff;
-
-        while (!blips.empty() && blips.front().gestureTime <= innerFrameEnd) {
-            Blip b = blips.front();
-            b.sinceTime = b.gestureTime - innerStepZero;
-            b.updateTime = innerLastStep - b.gestureTime;
-            result.push_back(b);
-            blips.pop_front();
-        }
-        playbackTime = innerFrameEnd;
-        return result;
-    }
+    std::list <Blip> play(Stepper stepper);
 };
-
 
 #endif /* gesture_h */

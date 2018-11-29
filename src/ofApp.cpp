@@ -1,3 +1,5 @@
+#include <list>
+#include <array>
 #include "ofApp.h"
 #include "stepper.h"
 
@@ -6,6 +8,19 @@ void ofApp::setup(){
     ofSetFrameRate(60);
     stepper.setStepSize(1. / 2000.);
     ofLog() << "Ticks per frame @ 60fps: " << 1. / 60. / stepper.getStepSize();
+
+    ofJson v;
+    v["hi"] = 102;
+    std::list <int> ints;
+    ints.push_back(1);
+    ints.push_back(4);
+    v["ints"] = ints;
+    Blip bbb;
+    bbb.pos = ofVec2f(3.5, 4.5);
+    bbb.gestureTime = 10.111;
+    v["blip"] = bbb;
+
+    ofLogNotice("setup - ") << v;
 }
 
 //--------------------------------------------------------------
@@ -58,9 +73,16 @@ void ofApp::update(){
     }
 
     // Hacky code for testing gesture playback;
+    bool done = false;
     if (ofGetElapsedTimef() > 10) {
         playBlips = extraG.play(stepper);
-        ofLog() << "playing... " << playBlips.size();
+        if (!done && playBlips.size()) {
+            ofLog() << "playing... " << playBlips.size();
+            ofJson j;
+            j["points"] = playBlips;
+            ofLogNotice("update - ") << j;
+            done = true;
+        }
 
         for (auto b = playBlips.begin(); b != playBlips.end(); b++) {
             ofSetColor(255, 127. + 127. * sin(b->gestureTime), 255);
