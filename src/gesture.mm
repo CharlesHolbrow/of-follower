@@ -40,7 +40,7 @@ void Gesture::update(Stepper stepper, ofVec2f pos) {
     ofVec2f dm = mf - mi;         // mouse delta
 
     // Velocity final. The unfiltered gesture looks prettier with stepsDuration
-    // than with frameDuration
+    // than with frameDuration.
     ofVec2f vf = dm / stepper.stepsDuration();
 
     // Note that the step at "stepZeroTime" has already been processed.
@@ -49,16 +49,12 @@ void Gesture::update(Stepper stepper, ofVec2f pos) {
     while (stepIndex <= stepper.steps) {
         // time since stepZero
         double sinceTime = stepIndex * stepper.stepSize;
-        // time to next step zero
-        double updateTime = stepper.stepsDuration() - sinceTime;
 
         ofVec2f input = mi + vf * sinceTime;
         filter.push(input);
 
         Blip b;
         b.pos = filter.average();
-        b.updateTime = updateTime;
-        b.sinceTime = sinceTime;
         b.gestureTime = stepper.stepZeroTime + sinceTime;
 
         blips.push_back(b);
@@ -67,7 +63,6 @@ void Gesture::update(Stepper stepper, ofVec2f pos) {
 
     previousPos = mf;
 };
-
 
 int Gesture::size() {
     return blips.size();
@@ -84,10 +79,11 @@ std::list <Blip> Gesture::play(Stepper stepper) {
 
     while (!blips.empty() && blips.front().gestureTime <= innerFrameEnd) {
         Blip b = blips.front();
+        // time since stepZero
         b.sinceTime = b.gestureTime - innerStepZero;
+        // time to next stepZero
         b.updateTime = innerLastStep - b.gestureTime;
         result.push_back(b);
-
         blips.pop_front();
     }
     playbackTime = innerFrameEnd;

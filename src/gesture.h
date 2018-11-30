@@ -58,7 +58,7 @@ public:
     // How many unplayed blips are in the gesture?
     int size();
 
-    // Get all the blips for a frame. This advances a the gestures playhead by
+    // Get all the blips for a frame. This advances the gesture's playhead by
     // the frameDuration. The absolute position of the stepper is ignored.
     std::list <Blip> play(Stepper stepper);
 };
