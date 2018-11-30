@@ -5,6 +5,7 @@
 #include "stepper.h"
 #include "gesture.h"
 #include "trail.h"
+#include "customJson.h"
 
 class ofApp : public ofBaseApp{
 

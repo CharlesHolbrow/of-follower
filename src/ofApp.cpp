@@ -1,7 +1,4 @@
-#include <list>
-#include <array>
 #include "ofApp.h"
-#include "stepper.h"
 
 //--------------------------------------------------------------
 void ofApp::setup(){
@@ -20,6 +17,12 @@ void ofApp::setup(){
     bbb.gestureTime = 10.111;
     v["blip"] = bbb;
     v["ofVec2f"] = bbb.pos;
+    Stepper s;
+    s.frameStart = 0.1;
+    s.frameEnd = 0.2;
+    s.stepSize = 0.001;
+    s.steps = 2;
+    v["stepper"] = s;
 
     ofLogNotice("setup - ") << v;
 }
