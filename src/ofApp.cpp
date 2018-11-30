@@ -19,6 +19,7 @@ void ofApp::setup(){
     bbb.pos = ofVec2f(3.5, 4.5);
     bbb.gestureTime = 10.111;
     v["blip"] = bbb;
+    v["ofVec2f"] = bbb.pos;
 
     ofLogNotice("setup - ") << v;
 }
@@ -73,17 +74,8 @@ void ofApp::update(){
     }
 
     // Hacky code for testing gesture playback;
-    bool done = false;
     if (ofGetElapsedTimef() > 10) {
         playBlips = extraG.play(stepper);
-        if (!done && playBlips.size()) {
-            ofLog() << "playing... " << playBlips.size();
-            ofJson j;
-            j["points"] = playBlips;
-            ofLogNotice("update - ") << j;
-            done = true;
-        }
-
         for (auto b = playBlips.begin(); b != playBlips.end(); b++) {
             ofSetColor(255, 127. + 127. * sin(b->gestureTime), 255);
             extraT.add(b->pos.x, b->pos.y, 30);

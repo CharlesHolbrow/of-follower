@@ -10,14 +10,22 @@
 
 
 using nlohmann::json;
+// Blip json
 void to_json(json& j, const Blip& b) {
-    j = json{{"x", b.pos.x}, {"y", b.pos.y}, {"t", b.gestureTime}};
+    j = json{{"pos", b.pos}, {"t", b.gestureTime}};
 }
-
 void from_json(const json& j, Blip& b) {
-    b.pos.x = j.at("x").get<double>();
-    b.pos.y = j.at("y").get<double>();
+    b.pos = j.at("pos").get<ofVec2f>();
+    b.gestureTime = j.at("t").get<float>();
 }
+// ofVec2f json
+void to_json(json& j, const ofVec2f v2){
+    j = json{{"x", v2.x}, {"y", v2.y}};
+};
+void from_json(const json& j, ofVec2f v2){
+    v2.x = j.at("x").get<float>();
+    v2.y = j.at("y").get<float>();
+};
 
 
 void Gesture::record(ofVec2f pos) {

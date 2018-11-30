@@ -31,10 +31,13 @@ struct Blip {
     double updateTime;  // At the last step in the frame, how old is the blip?
 };
 
-// These two methods make Blips json serializable
 using nlohmann::json;
+// make Blips json de/serializable
 void to_json(json& j, const Blip& b);
 void from_json(const json& j, Blip& b);
+// make ofVec2f json de/serializable
+void to_json(json& j, const ofVec2f v2);
+void from_json(const json& j, ofVec2f v2);
 
 class Gesture {
 private:
