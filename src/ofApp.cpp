@@ -11,7 +11,6 @@ void ofApp::setup(){
     b.pos = ofVec2f(3.5, 4.5);
     b.gestureTime = 10.111;
     v["blip"] = b;
-    v["ofVec2f"] = b.pos;
     Stepper s;
     s.frameStart = 0.1;
     s.frameEnd = 0.2;
@@ -39,17 +38,16 @@ void ofApp::update(){
 
     bool down = ofGetMousePressed();
     MouseEvent mouse;
-    mouse.down = down && !previousMouseIsDown;
+    mouse.press = down && !previousMouse.isDown;
+    mouse.release = !down && previousMouse.isDown;
     mouse.isDown = down;
     mouse.pos = ofVec2f(ofGetMouseX(), ofGetMouseY());
-    mouse.vel = (previousMousePos - mouse.pos) / stepper.stepsDuration();
-    // Is the mouse currently down
+    mouse.vel = (mouse.pos - previousMouse.pos) / stepper.stepsDuration();
 
-    content.update(stepper, mouse.pos, down);
+    content.update(stepper, mouse);
 
     previousMicroseconds = microseconds;
-    previousMousePos = mouse.pos;
-    previousMouseIsDown = down;
+    previousMouse = mouse;
 }
 
 //--------------------------------------------------------------

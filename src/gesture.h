@@ -35,7 +35,8 @@ struct MouseEvent {
     ofVec2f pos;
     ofVec2f vel;
     bool isDown;
-    bool down;
+    bool press;
+    bool release;
 };
 
 
@@ -59,7 +60,7 @@ public:
     void record(ofVec2f pos);
 
     // Construct the gesture by adding a new blips
-    void update(Stepper stepper, ofVec2f pos);
+    void update(Stepper stepper, MouseEvent mouse);
 
     // How many unplayed blips are in the gesture?
     int size();

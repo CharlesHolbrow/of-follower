@@ -14,14 +14,9 @@ void Gesture::record(ofVec2f pos) {
     blips.clear();
 };
 
-void Gesture::update(Stepper stepper, ofVec2f pos) {
-    ofVec2f mi = previousPos;     // initial mouse position
-    ofVec2f mf = pos;             // final mouse position
-    ofVec2f dm = mf - mi;         // mouse delta
-
-    // Velocity final. The unfiltered gesture looks prettier with stepsDuration
-    // than with frameDuration.
-    ofVec2f vf = dm / stepper.stepsDuration();
+void Gesture::update(Stepper stepper, MouseEvent mouse) {
+    if (!mouse.isDown) return;
+    if (mouse.press) record(mouse.pos);
 
     // Note that the step at "stepZeroTime" has already been processed.
     // For that reason, we start on stepIndex 1, and loop while "<="
@@ -31,7 +26,7 @@ void Gesture::update(Stepper stepper, ofVec2f pos) {
         double sinceTime = stepIndex * stepper.stepSize;
         recordingTime += stepper.stepSize;
 
-        ofVec2f input = mi + vf * sinceTime;
+        ofVec2f input = previousPos + mouse.vel * sinceTime;
         filter.push(input);
 
         Blip b;
@@ -41,8 +36,7 @@ void Gesture::update(Stepper stepper, ofVec2f pos) {
         blips.push_back(b);
         stepIndex++;
     }
-
-    previousPos = mf;
+    previousPos = mouse.pos;
 };
 
 int Gesture::size() {

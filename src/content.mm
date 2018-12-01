@@ -21,25 +21,23 @@ string randomString(int size) {
 };
 
 
-void Content::update(Stepper stepper, ofVec2f pos, bool isDown){
+void Content::update(Stepper stepper, MouseEvent mouse){
     // update all existing trails
     for (auto it = storage.begin(); it != storage.end(); it++) {
         it->second.trail.update(stepper.stepsDuration());
     }
 
     // If there is no current target, create one
-    if (isDown && mainPlayer == NULL) {
+    if (mouse.press && mainPlayer == NULL) {
         Player p;
         p.id = randomString(16);
         storage[p.id] = p;
         mainPlayer = &storage[p.id];
-        // begin recording
-        mainPlayer->gesture.record(pos);
         ofLog() << "Creating player with ID: " << p.id  << " size: " << storage.size();
     }
 
-    if (isDown && mainPlayer != NULL) {
-        mainPlayer->gesture.update(stepper, pos);
+    if (mainPlayer != NULL) {
+        mainPlayer->gesture.update(stepper, mouse);
     }
 
     // for every player, check if the gesture had new blips
@@ -51,6 +49,9 @@ void Content::update(Stepper stepper, ofVec2f pos, bool isDown){
             it->second.trail.updateLast(b->updateTime);
         }
     }
+
+    // TODO: remove unused players? This will be important once we start
+    // creating new players
 };
 
 void Content::render() {

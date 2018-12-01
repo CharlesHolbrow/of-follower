@@ -22,6 +22,6 @@ public:
     Player* mainPlayer;
     map<string, Player> storage;
 
-    void update(Stepper stepper, ofVec2f pos, bool isDown);
+    void update(Stepper stepper, MouseEvent mouse);
     void render();
 };

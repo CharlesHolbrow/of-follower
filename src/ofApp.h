@@ -36,8 +36,7 @@ class ofApp : public ofBaseApp{
 
     // Caching the previous frame make it easy to get the delta
     uint64_t previousMicroseconds = 0;
-    bool previousMouseIsDown;
-    ofVec2f previousMousePos;
+    MouseEvent previousMouse;
 
 	// Handle recording
 	STATE state = PLAYING;

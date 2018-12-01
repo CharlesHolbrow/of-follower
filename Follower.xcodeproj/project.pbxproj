@@ -78,7 +78,7 @@
 		563392B021B1ACBF00BC7DA7 /* customJson.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = customJson.h; sourceTree = "<group>"; };
 		563392B121B1AD2900BC7DA7 /* customJson.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = customJson.mm; sourceTree = "<group>"; };
 		563392B321B1FF3E00BC7DA7 /* content.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = content.h; sourceTree = "<group>"; };
-		563392B421B1FF7300BC7DA7 /* content.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = content.mm; sourceTree = "<group>"; };
+		563392B421B1FF7300BC7DA7 /* content.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = content.mm; sourceTree = "<group>"; wrapsLines = 0; };
 		5AF3183C25F9783D8876CBA3 /* gesture.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = gesture.h; path = src/gesture.h; sourceTree = SOURCE_ROOT; };
 		61313493CDB52744E22A604D /* json-forwards.h */ = {isa = PBXFileReference; explicitFileType = sourcecode.c.h; fileEncoding = 4; name = "json-forwards.h"; path = "../../../addons/ofxJSON/libs/jsoncpp/include/json/json-forwards.h"; sourceTree = SOURCE_ROOT; };
 		63A47AC60FFAFC3BF093EC0F /* OscOutboundPacketStream.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.cpp; fileEncoding = 4; name = OscOutboundPacketStream.cpp; path = ../../../addons/ofxOsc/libs/oscpack/src/osc/OscOutboundPacketStream.cpp; sourceTree = SOURCE_ROOT; };
