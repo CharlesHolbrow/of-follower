@@ -13,6 +13,7 @@
 #include "stepper.h"
 
 using nlohmann::json;
+
 // make Blips json de/serializable
 void to_json(json& j, const Blip& b);
 void from_json(const json& j, Blip& b);
@@ -22,6 +23,5 @@ void from_json(const json& j, ofVec2f v2);
 // Stepper
 void to_json(json& j, const Stepper& s);
 void from_json(const json& j, Stepper& s);
-
 
 #endif /* json_h */

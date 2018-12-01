@@ -1,11 +1,19 @@
 #pragma once
 
 #include <list>
+#include <map>
 #include "ofMain.h"
 #include "stepper.h"
 #include "gesture.h"
 #include "trail.h"
 #include "customJson.h"
+#include "content.h"
+
+
+enum STATE {
+	RECORDING,
+	PLAYING,
+};
 
 class ofApp : public ofBaseApp{
 
@@ -31,9 +39,16 @@ class ofApp : public ofBaseApp{
     bool previousMouseIsDown;
     ofVec2f previousMousePos;
 
+	// Handle recording
+	STATE state = PLAYING;
+	std::map<int,std::vector<Gesture>> storage;
+
+    // 
+    Content content;
+
     Stepper stepper;
     Gesture gesture;
-		Gesture extraG;
-		Trail extraT;
+	Gesture extraG;
+	Trail extraT;
     std::list <Trail> trails;
 };

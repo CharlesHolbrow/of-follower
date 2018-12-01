@@ -7,16 +7,11 @@ void ofApp::setup(){
     ofLog() << "Ticks per frame @ 60fps: " << 1. / 60. / stepper.getStepSize();
 
     ofJson v;
-    v["hi"] = 102;
-    std::list <int> ints;
-    ints.push_back(1);
-    ints.push_back(4);
-    v["ints"] = ints;
-    Blip bbb;
-    bbb.pos = ofVec2f(3.5, 4.5);
-    bbb.gestureTime = 10.111;
-    v["blip"] = bbb;
-    v["ofVec2f"] = bbb.pos;
+    Blip b;
+    b.pos = ofVec2f(3.5, 4.5);
+    b.gestureTime = 10.111;
+    v["blip"] = b;
+    v["ofVec2f"] = b.pos;
     Stepper s;
     s.frameStart = 0.1;
     s.frameEnd = 0.2;
@@ -46,6 +41,8 @@ void ofApp::update(){
     bool down = ofGetMousePressed(); // Is the mouse currently down?
     ofVec2f pos = ofVec2f(ofGetMouseX(), ofGetMouseY()); // mouse position
 
+    content.update(stepper, pos, down);
+
     // update all existing particles
     for (auto t = trails.begin(); t != trails.end(); t++) {
         t->update(stepper.stepsDuration());
@@ -53,7 +50,7 @@ void ofApp::update(){
     extraT.update(stepper.stepsDuration());
 
     // deal with the gesture
-    if (down && down != previousMouseIsDown) {
+    if (down && down != previousMouseIsDown && content.mainPlayer != NULL) {
         // start a new gesture
         gesture.record(pos);
         extraG.record(pos);
@@ -76,15 +73,17 @@ void ofApp::update(){
         trails.back().updateLast(b->updateTime);
     }
 
-    // Hacky code for testing gesture playback;
-    if (ofGetElapsedTimef() > 10) {
-        playBlips = extraG.play(stepper);
-        for (auto b = playBlips.begin(); b != playBlips.end(); b++) {
-            ofSetColor(255, 127. + 127. * sin(b->gestureTime), 255);
-            extraT.add(b->pos.x, b->pos.y, 30);
-            extraT.updateLast(b->updateTime);
-        }
-    }
+    // // Hacky code for testing gesture playback;
+    // if (ofGetElapsedTimef() > 10) {
+    //     playBlips = extraG.play(stepper);
+    //     for (auto b = playBlips.begin(); b != playBlips.end(); b++) {
+    //         ofSetColor(255, 127. + 127. * sin(b->gestureTime), 255);
+    //         extraT.add(b->pos.x, b->pos.y, 30);
+    //         extraT.updateLast(b->updateTime);
+    //     }
+    // }
+
+
 
     previousMicroseconds = microseconds;
     previousMousePos = pos;
@@ -94,10 +93,13 @@ void ofApp::update(){
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(0, 0, 0);
+
+    content.render();
+
     for (auto t = trails.begin(); t != trails.end(); t++) {
         t->render();
     }
-    extraT.render();
+    // extraT.render();
     while (!trails.empty() && trails.front().isDead()) {
         trails.pop_front();
         ofLog() << "removing trail";
@@ -106,7 +108,24 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-
+    ofLog() << "keyPressed: " << key;
+    // Tab toggles recording state
+    if (key == OF_KEY_TAB) {
+        if (state == PLAYING) {
+            state = RECORDING;
+            ofLog() << "Recording";
+        }
+        else {
+            state = PLAYING;
+            ofLog() << "Recording";
+        }
+        return;
+    }
+    if (state == RECORDING) {
+        ofLog() << "Save last gesture to " << key;
+    } else  if (state == PLAYING){
+        ofLog() << "Play gesture: " << key;
+    }
 }
 
 //--------------------------------------------------------------
