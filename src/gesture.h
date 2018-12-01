@@ -38,6 +38,9 @@ private:
     ofVec2f previousPos;
     // Playhead position, so consecutive play() calls know where to pick up from
     double playbackTime;
+    // The last recorded blip
+    double recordingTime;
+    // smooth out input values
     Filter <60> filter;
     std::list <Blip> blips;
 

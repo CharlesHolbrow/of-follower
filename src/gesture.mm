@@ -8,6 +8,7 @@
 #include "gesture.h"
 
 void Gesture::record(ofVec2f pos) {
+    recordingTime = 0;
     previousPos = pos;
     filter.fill(pos);
     blips.clear();
@@ -28,13 +29,14 @@ void Gesture::update(Stepper stepper, ofVec2f pos) {
     while (stepIndex <= stepper.steps) {
         // time since stepZero
         double sinceTime = stepIndex * stepper.stepSize;
+        recordingTime += stepper.stepSize;
 
         ofVec2f input = mi + vf * sinceTime;
         filter.push(input);
 
         Blip b;
         b.pos = filter.average();
-        b.gestureTime = stepper.stepZeroTime + sinceTime;
+        b.gestureTime = recordingTime;
 
         blips.push_back(b);
         stepIndex++;
