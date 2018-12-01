@@ -37,14 +37,18 @@ void ofApp::update(){
     // Setup the Stepper for this frame
     stepper.advanceFrame(frameDelta);
 
-    // Get mouse information;
-    bool down = ofGetMousePressed(); // Is the mouse currently down?
-    ofVec2f pos = ofVec2f(ofGetMouseX(), ofGetMouseY()); // mouse position
+    bool down = ofGetMousePressed();
+    MouseEvent mouse;
+    mouse.down = down && !previousMouseIsDown;
+    mouse.isDown = down;
+    mouse.pos = ofVec2f(ofGetMouseX(), ofGetMouseY());
+    mouse.vel = (previousMousePos - mouse.pos) / stepper.stepsDuration();
+    // Is the mouse currently down
 
-    content.update(stepper, pos, down);
+    content.update(stepper, mouse.pos, down);
 
     previousMicroseconds = microseconds;
-    previousMousePos = pos;
+    previousMousePos = mouse.pos;
     previousMouseIsDown = down;
 }
 

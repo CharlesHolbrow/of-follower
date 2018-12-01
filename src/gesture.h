@@ -31,6 +31,13 @@ struct Blip {
     double updateTime;  // At the last step in the frame, how old is the blip?
 };
 
+struct MouseEvent {
+    ofVec2f pos;
+    ofVec2f vel;
+    bool isDown;
+    bool down;
+};
+
 
 class Gesture {
 private:
@@ -45,6 +52,9 @@ private:
     std::list <Blip> blips;
 
 public:
+    // input
+    ofVec2f velocity;
+
     // Start recording a new gesture. (does not change stepper size)
     void record(ofVec2f pos);
 
