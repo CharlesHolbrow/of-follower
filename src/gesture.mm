@@ -51,22 +51,21 @@ int Gesture::size() {
 
 std::list <Blip> Gesture::play(Stepper stepper) {
     std:list <Blip> result;
-    double innerFrameEnd = playbackTime + stepper.frameDuration();
-    // the difference in time between the stepper and the gesture;
-    // How far ahead is global transport from inner?
-    double diff = stepper.frameEnd - innerFrameEnd;
-    double innerStepZero = stepper.stepZeroTime - diff;
-    double innerLastStep = stepper.lastStepTime() - diff;
+    double timeSince = 0;
+    double timeLeft = stepper.stepsDuration();
+    int stepIndex = 1;
+    playbackTime += timeLeft;
 
-    while (!blips.empty() && blips.front().gestureTime <= innerFrameEnd) {
+    while (!blips.empty() && stepIndex <= stepper.steps) {
+        timeSince += stepper.stepSize;
+        timeLeft -= stepper.stepSize;
         Blip b = blips.front();
         // time since stepZero
-        b.sinceTime = b.gestureTime - innerStepZero;
+        b.sinceTime = timeSince;
         // time to next stepZero
-        b.updateTime = innerLastStep - b.gestureTime;
+        b.updateTime = timeLeft;
         result.push_back(b);
         blips.pop_front();
     }
-    playbackTime = innerFrameEnd;
     return result;
 }

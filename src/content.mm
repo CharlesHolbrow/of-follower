@@ -39,14 +39,12 @@ void Content::update(Stepper stepper, ofVec2f pos, bool isDown){
     }
 
     if (isDown && mainPlayer != NULL) {
-        ofLog() << "Updating main player " << pos;
         mainPlayer->gesture.update(stepper, pos);
     }
 
     // for every player, check if the gesture had new blips
     for (auto it = storage.begin(); it != storage.end(); it++) {
         list<Blip> newBlips = it->second.gesture.play(stepper);
-        ofLog() << "found blips " <<  newBlips.size();
         for (auto b = newBlips.begin(); b != newBlips.end(); b++) {
             ofSetColor(127. + 127. * sin(b->gestureTime), 255, 255);
             it->second.trail.add(b->pos.x, b->pos.y, 30);

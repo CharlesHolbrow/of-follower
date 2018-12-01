@@ -41,14 +41,7 @@ class ofApp : public ofBaseApp{
 
 	// Handle recording
 	STATE state = PLAYING;
-	std::map<int,std::vector<Gesture>> storage;
 
-    // 
     Content content;
-
     Stepper stepper;
-    Gesture gesture;
-	Gesture extraG;
-	Trail extraT;
-    std::list <Trail> trails;
 };
