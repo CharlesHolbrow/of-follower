@@ -9,7 +9,7 @@ void ofApp::setup(){
     ofJson v;
     Blip b;
     b.pos = ofVec2f(3.5, 4.5);
-    b.gestureTime = 10.111;
+    b.gestureTime = 0.111;
     v["blip"] = b;
     Stepper s;
     s.frameStart = 0.1;
@@ -18,7 +18,31 @@ void ofApp::setup(){
     s.steps = 2;
     v["stepper"] = s;
 
-    ofLogNotice("setup - ") << v;
+    ofLogNotice("setup - ") << v << std::endl;
+
+    Gesture g;
+    GesturePlayhead head;
+    head.playbackPoint = 0;
+    head.gesture = &g;
+
+    g.blipsVec.push_back(b);
+    b.gestureTime += 1; g.blipsVec.push_back(b); // 1.1
+    b.gestureTime += 1; g.blipsVec.push_back(b);
+    b.gestureTime += 1; g.blipsVec.push_back(b);
+    b.gestureTime += 1; g.blipsVec.push_back(b);
+    b.gestureTime += 1; g.blipsVec.push_back(b); // 5.1
+    ofLog() << "hi " <<  g.blipsVec.back().gestureTime;
+
+    for (auto b : head.play(4)) {
+        ofLog() << "gestureTime - first : " << b.gestureTime;
+    }
+    for (auto b : head.play(7)) {
+        ofLog() << "gestureTime - second: " << b.gestureTime;
+    }
+    b.gestureTime += 1; g.blipsVec.push_back(b); // 6.1
+    for (auto b : head.play(7)) {
+        ofLog() << "gestureTime - third:  " << b.gestureTime;
+    }
 }
 
 //--------------------------------------------------------------

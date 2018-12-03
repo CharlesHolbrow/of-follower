@@ -11,6 +11,7 @@
 #define gesture_h
 
 #include <list>
+#include <vector>
 
 #include "ofMain.h"
 #include "stepper.h"
@@ -40,6 +41,7 @@ struct MouseEvent {
 };
 
 
+
 class Gesture {
 private:
     // Mouse position at the end of last frame
@@ -51,10 +53,11 @@ private:
     // Smooth out input values
     Filter <60> filter;
     std::list <Blip> blips;
-
 public:
+    std::vector<Blip> blipsVec;
+
     // input
-    ofVec2f velocity;
+    ofVec2f velocity; // TODO: currently unused
 
     // Start recording a new gesture. (does not change stepper size)
     void record(ofVec2f pos);

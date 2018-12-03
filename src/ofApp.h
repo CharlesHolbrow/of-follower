@@ -5,6 +5,7 @@
 #include "ofMain.h"
 #include "stepper.h"
 #include "gesture.h"
+#include "gesturePlayhead.h"
 #include "trail.h"
 #include "customJson.h"
 #include "content.h"
