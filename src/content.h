@@ -20,4 +20,5 @@ public:
     void update(Stepper stepper, MouseEvent mouse);
     void render();
     void replayMainGesture();
+    void terminateMainGesture();
 };

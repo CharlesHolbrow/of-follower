@@ -80,6 +80,8 @@ void ofApp::keyPressed(int key){
 
     if (key == OF_KEY_RETURN) {
         content.replayMainGesture();
+    } else if (key == OF_KEY_BACKSPACE) {
+        content.terminateMainGesture();
     }
 }
 

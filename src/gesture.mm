@@ -8,6 +8,7 @@
 #include "gesture.h"
 
 void Gesture::reset() {
+    totalBlips = -1; // "un-terminate" the gesture
     recordingTime = 0;
     previousPos = ofVec2f(0, 0);
     filter.fill(previousPos);
@@ -47,4 +48,8 @@ void Gesture::update(Stepper stepper, MouseEvent mouse) {
 
 int Gesture::size() {
     return blipsVec.size();
+};
+
+void Gesture::terminate() {
+    totalBlips = blipsVec.size();
 };

@@ -2,24 +2,32 @@
 
 void GesturePlayhead::init(Gesture* g) {
     gesture = g;
-    playbackPoint = 0;
+    playbackIndex = 0;
     playbackTime = 0;
 };
 
+Range<std::vector<Blip>::iterator> GesturePlayhead::update(double delta) {
+    double until = playbackTime + delta;
+    int start = playbackIndex;
+    int& end = playbackIndex; // lets call this 'end' for clarity
 
-Range<std::vector<Blip>::iterator> GesturePlayhead::play(double until) {
-    int start = playbackPoint;
-    int end = playbackPoint;
-    while (gesture->blipsVec.size() > end) {
-        // we know that gesture->blipsVec[end] exists
+    // the !playbackComplete clause in the while condition ensures that we
+    // do not return any blips past the end.
+    while (gesture->blipsVec.size() > end && !playbackComplete()) {
+        // we know that blipsVec[end] exists
+        // we know that blipsVec[end] was added before gesture termination
         if (gesture->blipsVec[end].gestureTime > until) break;
+        // we know that blipsVec[end] time is <= until
         end++;
+        // end (and playbackIndex) now point to the next blip to look at
     }
-    playbackPoint = end;
+    // note that because `end` is a refernce to `playbackIndex`, we have been
+    // updating playbackIndex inside the loop.
     playbackTime = until;
     return Range<std::vector<Blip>::iterator>(gesture->blipsVec.begin() + start, gesture->blipsVec.begin() + end);
 };
 
-Range<std::vector<Blip>::iterator> GesturePlayhead::update(double delta) {
-    return play(playbackTime + delta);
+bool GesturePlayhead::playbackComplete() {
+    if (gesture->totalBlips < 0) return false; // gesture is still recording
+    return playbackIndex >= gesture->totalBlips;
 };

@@ -14,9 +14,9 @@ public:
 
 struct GesturePlayhead {
     Gesture* gesture;
-    int playbackPoint; // the last unreturned point
+    int playbackIndex; // the last unplayed point
     double playbackTime;
     void init(Gesture* g);
-    Range<std::vector<Blip>::iterator> play(double until);
     Range<std::vector<Blip>::iterator> update(double delta);
+    bool playbackComplete();
 };

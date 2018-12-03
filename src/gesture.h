@@ -21,15 +21,10 @@
 struct Blip {
     // The x,y position of this blip
     ofVec2f pos;
-
     // How long into the gesture was this created?
     double gestureTime;
-
-    // sinceTime and updateTime are only meaningful in the context of a frame.
-    // The provide timing information within a frame, and help the renderer
-    // know how much to update each blip.
-    double sinceTime;   // how long after step0 was this created?
-    double updateTime;  // At the last step in the frame, how old is the blip?
+    // Is this the last blip in a gesture?
+    bool terminal;
 };
 
 struct MouseEvent {
@@ -53,11 +48,17 @@ private:
 public:
     std::vector<Blip> blipsVec;
 
-    // Start clear all blips, and start a new gesture. (does not change stepper size)
+    // How many blips in the gesture? -1 means the gesture is not yet terminated
+    int totalBlips = -1;
+
+    // Clear all blips, and start a new gesture. (does not change stepper size)
     void reset();
 
     // Construct the gesture by adding a new blips
     void update(Stepper stepper, MouseEvent mouse);
+
+    // terminate the gesture
+    void terminate();
 
     // How many unplayed blips are in the gesture?
     int size();
