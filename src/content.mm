@@ -22,32 +22,25 @@ string randomString(int size) {
 
 
 void Content::update(Stepper stepper, MouseEvent mouse){
-    // update all existing trails
-    for (auto it = storage.begin(); it != storage.end(); it++) {
-        it->second.trail.update(stepper.stepsDuration());
-    }
-
     // If there is no current target, create one
-    if (mouse.press && mainPlayer == NULL) {
-        Player p;
-        p.id = randomString(16);
-        storage[p.id] = p;
-        mainPlayer = &storage[p.id];
-        ofLog() << "Creating player with ID: " << p.id  << " size: " << storage.size();
+    if (mouse.press && mainGesture == NULL) {
+        Gesture g;
+        std::string id = randomString(16);
+        gestures[id] = g;
+        mainGesture = &gestures[id];
+        Trail t;
+        t.playhead.init(mainGesture);
+        trails.push_back(t);
+        ofLog() << "Creating player with ID: " << id  << " size: " << gestures.size();
     }
 
-    if (mainPlayer != NULL) {
-        mainPlayer->gesture.update(stepper, mouse);
+    if (mainGesture != NULL) {
+        mainGesture->update(stepper, mouse);
     }
 
-    // for every player, check if the gesture had new blips
-    for (auto it = storage.begin(); it != storage.end(); it++) {
-        list<Blip> newBlips = it->second.gesture.play(stepper);
-        for (auto b = newBlips.begin(); b != newBlips.end(); b++) {
-            ofSetColor(127. + 127. * sin(b->gestureTime), 255, 255);
-            it->second.trail.add(b->pos.x, b->pos.y, 30);
-            it->second.trail.updateLast(b->updateTime);
-        }
+    // update all existing trails
+    for (auto trail = trails.begin(); trail != trails.end(); trail++) {
+        trail->update(stepper.stepsDuration());
     }
 
     // TODO: remove unused players? This will be important once we start
@@ -55,7 +48,7 @@ void Content::update(Stepper stepper, MouseEvent mouse){
 };
 
 void Content::render() {
-    for (auto p = storage.begin(); p != storage.end(); p++) {
-        p->second.trail.render();
+    for (auto trail = trails.begin(); trail != trails.end(); trail++) {
+        trail->render();
     }
 };

@@ -8,6 +8,8 @@
 #ifndef trail_h
 #define trail_h
 
+#include "gesturePlayhead.h"
+
 class Particle {
 public:
     ofVec2f pos;
@@ -39,6 +41,7 @@ public:
 
 class Trail {
 public:
+    GesturePlayhead playhead;
     float speed = 1;
     std::list <Particle> parts;
     void clear() {
@@ -54,9 +57,17 @@ public:
         while (parts.size() > 0 && parts.front().isDead()) {
             parts.pop_front();
         }
+
+        // see if there are new blips from the gesture
+        double updateTime = 0;
+        for (auto b : playhead.update(deltaTime)) {
+            ofSetColor(127. + 127. * sin(b.gestureTime), 255, 255);
+            add(b.pos.x, b.pos.y, 30);
+            updateLast(playhead.playbackTime - b.gestureTime);
+        }
     };
     
-    void updateLast(float deltaTime) {
+    void updateLast(double deltaTime) {
         if (!parts.size()) return;
         parts.back().update(deltaTime * speed);
     };

@@ -11,16 +11,11 @@ using namespace std;
 
 string randomString(int size);
 
-struct Player {
-    Gesture gesture;
-    Trail trail;
-    string id;
-};
-
 class Content {
 public:
-    Player* mainPlayer;
-    map<string, Player> storage;
+    Gesture* mainGesture;
+    map<string, Gesture> gestures;
+    list<Trail> trails;
 
     void update(Stepper stepper, MouseEvent mouse);
     void render();

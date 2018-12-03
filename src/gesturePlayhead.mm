@@ -1,5 +1,12 @@
 #include "gesturePlayhead.h"
 
+void GesturePlayhead::init(Gesture* g) {
+    gesture = g;
+    playbackPoint = 0;
+    playbackTime = 0;
+};
+
+
 Range<std::vector<Blip>::iterator> GesturePlayhead::play(double until) {
     int start = playbackPoint;
     int end = playbackPoint;
@@ -10,10 +17,10 @@ Range<std::vector<Blip>::iterator> GesturePlayhead::play(double until) {
         end++;
     }
     playbackPoint = end;
+    playbackTime = until;
     return Range<std::vector<Blip>::iterator>(gesture->blipsVec.begin() + start, gesture->blipsVec.begin() + end);
 };
 
-GesturePlayhead::GesturePlayhead(Gesture* g) {
-    gesture = g;
-    playbackPoint = 0;
+Range<std::vector<Blip>::iterator> GesturePlayhead::update(double delta) {
+    return play(playbackTime + delta);
 };
