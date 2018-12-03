@@ -12,8 +12,10 @@ public:
     Iter end() { return e; }
 };
 
+// As of December 3, 2018,GesturePlayhead methods (other than init() assume that
+// init(Gesture*) has been called.
 struct GesturePlayhead {
-    Gesture* gesture;
+    Gesture* gesture = NULL;
     int playbackIndex; // the last unplayed point
     double playbackTime;
     void init(Gesture* g);

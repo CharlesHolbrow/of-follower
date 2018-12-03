@@ -43,7 +43,10 @@ void Content::update(Stepper stepper, MouseEvent mouse){
         trail->update(stepper.stepsDuration());
     }
 
-    // TODO: remove completed trails?
+    while (!trails.empty() && trails.front().isDead()) {
+        ofLog() << "removing trail!";
+        trails.pop_front();
+    }
 };
 
 void Content::render() {

@@ -92,8 +92,15 @@ public:
     };
     
     bool isDead() {
-        return parts.empty();
-    }
+        // For now, let's consider Trails with uninitialized gestures dead. I'm
+        // not totally sure that this is the best practice, but it's probably
+        // best to initialize the gesture as soon as the trail is created, until
+        // we decide exactly how we want to handle constructors.
+        if (playhead.gesture == NULL) return true;
+
+        // verify playback is complete AND there are no remaining blips
+        return playhead.playbackComplete() && parts.empty();
+    };
 };
 
 
