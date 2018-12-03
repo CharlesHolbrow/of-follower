@@ -12,7 +12,9 @@ Range<std::vector<Blip>::iterator> GesturePlayhead::update(double delta) {
     int& end = playbackIndex; // lets call this 'end' for clarity
 
     // the !playbackComplete clause in the while condition ensures that we
-    // do not return any blips past the end.
+    // do not return any blips past the end. If for some reason we want to play
+    // past the end of the "terminated" Gesture, I believe we can just remove
+    // `&& !playbackComplete()` from while condition.
     while (gesture->blipsVec.size() > end && !playbackComplete()) {
         // we know that blipsVec[end] exists
         // we know that blipsVec[end] was added before gesture termination
