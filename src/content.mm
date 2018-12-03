@@ -43,12 +43,18 @@ void Content::update(Stepper stepper, MouseEvent mouse){
         trail->update(stepper.stepsDuration());
     }
 
-    // TODO: remove unused players? This will be important once we start
-    // creating new players
+    // TODO: remove completed trails?
 };
 
 void Content::render() {
     for (auto trail = trails.begin(); trail != trails.end(); trail++) {
         trail->render();
     }
+};
+
+void Content::replayMainGesture() {
+    if (mainGesture == NULL) return;
+    Trail t;
+    t.playhead.init(mainGesture);
+    trails.push_back(t);
 };

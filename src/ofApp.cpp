@@ -77,6 +77,10 @@ void ofApp::keyPressed(int key){
     } else  if (state == PLAYING){
         ofLog() << "Play gesture: " << key;
     }
+
+    if (key == OF_KEY_RETURN) {
+        content.replayMainGesture();
+    }
 }
 
 //--------------------------------------------------------------
