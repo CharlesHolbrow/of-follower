@@ -53,9 +53,6 @@ private:
 public:
     std::vector<Blip> blipsVec;
 
-    // input
-    ofVec2f velocity; // TODO: currently unused
-
     // Start clear all blips, and start a new gesture. (does not change stepper size)
     void reset();
 
