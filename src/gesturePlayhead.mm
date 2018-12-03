@@ -12,7 +12,6 @@ Range<std::vector<Blip>::iterator> GesturePlayhead::play(double until) {
     int end = playbackPoint;
     while (gesture->blipsVec.size() > end) {
         // we know that gesture->blipsVec[end] exists
-        // check if we need to return, but increment anyway
         if (gesture->blipsVec[end].gestureTime > until) break;
         end++;
     }
