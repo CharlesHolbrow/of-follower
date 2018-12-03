@@ -7,16 +7,22 @@
 
 #include "gesture.h"
 
-void Gesture::record(ofVec2f pos) {
+void Gesture::reset() {
     recordingTime = 0;
-    previousPos = pos;
-    filter.fill(pos);
-    blips.clear();
+    previousPos = ofVec2f(0, 0);
+    filter.fill(previousPos);
+    blipsVec.clear();
 };
 
 void Gesture::update(Stepper stepper, MouseEvent mouse) {
-    if (!mouse.isDown) return;
-    if (mouse.press) record(mouse.pos);
+    if (!mouse.isDown) {
+        recordingTime += stepper.stepsDuration();
+        return;
+    };
+    if (mouse.press) {
+        filter.fill(mouse.pos);
+        previousPos = mouse.pos;
+    }
 
     // Note that the step at "stepZeroTime" has already been processed.
     // For that reason, we start on stepIndex 1, and loop while "<="
@@ -33,7 +39,6 @@ void Gesture::update(Stepper stepper, MouseEvent mouse) {
         b.pos = filter.average();
         b.gestureTime = recordingTime;
 
-        blips.push_back(b);
         blipsVec.push_back(b);
         stepIndex++;
     }
@@ -41,26 +46,5 @@ void Gesture::update(Stepper stepper, MouseEvent mouse) {
 };
 
 int Gesture::size() {
-    return blips.size();
+    return blipsVec.size();
 };
-
-std::list <Blip> Gesture::play(Stepper stepper) {
-    std:list <Blip> result;
-    double timeSince = 0;
-    double timeLeft = stepper.stepsDuration();
-    int stepIndex = 1;
-    playbackTime += timeLeft;
-
-    while (!blips.empty() && stepIndex <= stepper.steps) {
-        timeSince += stepper.stepSize;
-        timeLeft -= stepper.stepSize;
-        Blip b = blips.front();
-        // time since stepZero
-        b.sinceTime = timeSince;
-        // time to next stepZero
-        b.updateTime = timeLeft;
-        result.push_back(b);
-        blips.pop_front();
-    }
-    return result;
-}

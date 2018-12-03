@@ -50,25 +50,20 @@ private:
     double recordingTime;
     // Smooth out input values
     Filter <60> filter;
-    std::list <Blip> blips;
 public:
     std::vector<Blip> blipsVec;
 
     // input
     ofVec2f velocity; // TODO: currently unused
 
-    // Start recording a new gesture. (does not change stepper size)
-    void record(ofVec2f pos);
+    // Start clear all blips, and start a new gesture. (does not change stepper size)
+    void reset();
 
     // Construct the gesture by adding a new blips
     void update(Stepper stepper, MouseEvent mouse);
 
     // How many unplayed blips are in the gesture?
     int size();
-
-    // Get all the blips for a frame. This advances the gesture's playhead by
-    // the frameDuration. The absolute position of the stepper is ignored.
-    std::list <Blip> play(Stepper stepper);
 };
 
 #endif /* gesture_h */
