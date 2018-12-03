@@ -64,6 +64,7 @@ void Content::replayMainGesture() {
 
 void Content::terminateMainGesture() {
     if (mainGesture == NULL) return;
-    mainGesture->terminate();
     ofLogNotice("Content") << "Main Gesture terminaged. Size: " << mainGesture->size();
+    mainGesture->terminate();
+    mainGesture = NULL;
 };
