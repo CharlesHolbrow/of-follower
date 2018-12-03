@@ -12,3 +12,8 @@ Range<std::vector<Blip>::iterator> GesturePlayhead::play(double until) {
     playbackPoint = end;
     return Range<std::vector<Blip>::iterator>(gesture->blipsVec.begin() + start, gesture->blipsVec.begin() + end);
 };
+
+GesturePlayhead::GesturePlayhead(Gesture* g) {
+    gesture = g;
+    playbackPoint = 0;
+};

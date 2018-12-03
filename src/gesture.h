@@ -40,8 +40,6 @@ struct MouseEvent {
     bool release;
 };
 
-
-
 class Gesture {
 private:
     // Mouse position at the end of last frame

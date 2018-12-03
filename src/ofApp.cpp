@@ -21,9 +21,7 @@ void ofApp::setup(){
     ofLogNotice("setup - ") << v << std::endl;
 
     Gesture g;
-    GesturePlayhead head;
-    head.playbackPoint = 0;
-    head.gesture = &g;
+    GesturePlayhead head = GesturePlayhead(&g);
 
     g.blipsVec.push_back(b);
     b.gestureTime += 1; g.blipsVec.push_back(b); // 1.1
