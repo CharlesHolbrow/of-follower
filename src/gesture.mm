@@ -34,6 +34,7 @@ void Gesture::update(Stepper stepper, MouseEvent mouse) {
         b.gestureTime = recordingTime;
 
         blips.push_back(b);
+        blipsVec.push_back(b);
         stepIndex++;
     }
     previousPos = mouse.pos;
