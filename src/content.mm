@@ -25,13 +25,13 @@ void Content::update(Stepper stepper, MouseEvent mouse){
     // If there is no current target, create one
     if (mouse.press && mainGesture == NULL) {
         Gesture g;
-        std::string id = randomString(16);
-        gestures[id] = g;
-        mainGesture = &gestures[id];
+        g.id = randomString(16);
+        gestures[g.id] = g;
+        mainGesture = &gestures[g.id];
         Trail t;
         t.playhead.init(mainGesture);
         trails.push_back(t);
-        ofLog() << "Creating player with ID: " << id  << " size: " << gestures.size();
+        ofLog() << "Creating player with ID: " << g.id  << " size: " << gestures.size();
     }
 
     if (mainGesture != NULL) {
@@ -64,7 +64,24 @@ void Content::replayMainGesture() {
 
 void Content::terminateMainGesture() {
     if (mainGesture == NULL) return;
-    ofLogNotice("Content") << "Main Gesture terminaged. Size: " << mainGesture->size();
+    ofLogNotice("Content") << "Main Gesture terminated. Size: " << mainGesture->size();
     mainGesture->terminate();
     mainGesture = NULL;
+};
+
+void Content::mapMainGestureToKey(int key) {
+    if (mainGesture == NULL) return;
+    keymap[key].push_back(mainGesture->id);
+};
+
+void Content::playSavedGesture(int key) {
+    if (!keymap.count(key)) return;
+    std::string id = keymap[key].back();
+    if (!gestures.count(id)) {
+        ofLog() << "Content::playSavedGesture failed to find id: " << id;
+        return;
+    }
+    Trail t;
+    t.playhead.init(&gestures[id]);
+    trails.push_back(t);
 };

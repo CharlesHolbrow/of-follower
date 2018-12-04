@@ -47,6 +47,7 @@ private:
     Filter <60> filter;
 public:
     std::vector<Blip> blipsVec;
+    std::string id;
 
     // How many blips in the gesture? -1 means the gesture is not yet terminated
     int totalBlips = -1;

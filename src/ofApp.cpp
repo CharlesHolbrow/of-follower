@@ -59,29 +59,35 @@ void ofApp::draw(){
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
-    ofLog() << "keyPressed: " << key;
     // Tab toggles recording state
     if (key == OF_KEY_TAB) {
         if (state == PLAYING) {
             state = RECORDING;
+            content.terminateMainGesture();
             ofLog() << "Recording";
         }
         else {
             state = PLAYING;
-            ofLog() << "Recording";
+            ofLog() << "Playing";
         }
         return;
     }
-    if (state == RECORDING) {
-        ofLog() << "Save last gesture to " << key;
-    } else  if (state == PLAYING){
-        ofLog() << "Play gesture: " << key;
-    }
 
-    if (key == OF_KEY_RETURN) {
+    switch(key){
+    case OF_KEY_RETURN:
         content.replayMainGesture();
-    } else if (key == OF_KEY_BACKSPACE) {
+        break;
+    case OF_KEY_BACKSPACE:
         content.terminateMainGesture();
+        break;
+    default:
+        if (state == PLAYING) {
+            content.playSavedGesture(key);
+        } else if (state == RECORDING) {
+            content.mapMainGestureToKey(key);
+            content.terminateMainGesture();
+        }
+        break;
     }
 }
 

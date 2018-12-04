@@ -2,6 +2,7 @@
 
 #include <string>
 #include <map>
+#include <list>
 #include "gesture.h"
 #include "trail.h"
 #include "stepper.h"
@@ -12,6 +13,9 @@ using namespace std;
 string randomString(int size);
 
 class Content {
+private:
+    map<int, vector<string>> keymap;
+
 public:
     Gesture* mainGesture;
     map<string, Gesture> gestures;
@@ -21,4 +25,6 @@ public:
     void render();
     void replayMainGesture();
     void terminateMainGesture();
+    void mapMainGestureToKey(int key);
+    void playSavedGesture(int key);
 };
