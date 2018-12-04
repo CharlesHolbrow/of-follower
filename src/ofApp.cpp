@@ -55,20 +55,23 @@ void ofApp::draw(){
     ofBackground(0, 0, 0);
 
     content.render();
+    if (state == RECORDING) {
+        ofSetColor(155 + 100 * sin(ofGetElapsedTimef() * 4), 0, 0);
+        ofDrawCircle(10, 10, 5);
+    }
 }
 
 //--------------------------------------------------------------
 void ofApp::keyPressed(int key){
+    ofLog() << "Press: " << key;
     // Tab toggles recording state
     if (key == OF_KEY_TAB) {
         if (state == PLAYING) {
             state = RECORDING;
-            content.terminateMainGesture();
-            ofLog() << "Recording";
         }
         else {
             state = PLAYING;
-            ofLog() << "Playing";
+            content.terminateMainGesture();
         }
         return;
     }
@@ -79,6 +82,10 @@ void ofApp::keyPressed(int key){
         break;
     case OF_KEY_BACKSPACE:
         content.terminateMainGesture();
+        break;
+    case OF_KEY_SHIFT:
+        break;
+    case OF_KEY_RIGHT_SHIFT:
         break;
     default:
         if (state == PLAYING) {
