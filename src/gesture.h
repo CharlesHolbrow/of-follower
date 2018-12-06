@@ -44,7 +44,7 @@ private:
     // The last added blip
     double recordingTime;
     // Smooth out input values
-    Filter <60> filter;
+    Filter <ofVec3f, 60> filter;
 public:
     std::vector<Blip> blipsVec;
     std::string id;

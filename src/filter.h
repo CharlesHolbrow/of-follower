@@ -7,25 +7,25 @@
 
 #ifndef filter_h
 #define filter_h
-template < int SIZE >
+template < class T, int SIZE >
 class Filter {
 private:
-    ofVec2f values[SIZE];
+    T values[SIZE];
     int position = 0;
 public:
-    void push(ofVec2f v) {
+    void push(T v) {
         values[position] = v;
         if (++position >= SIZE) {
             position = position % SIZE;
         }
     };
-    void fill(ofVec2f v) {
+    void fill(T v) {
         for (int i = 0; i < SIZE; i++) {
             values[i] = v;
         }
     }
-    ofVec2f average(){
-        ofVec2f result;
+    T average(){
+        T result;
         for (int i = 0; i < SIZE; i++) {
             result += values[i];
         }
